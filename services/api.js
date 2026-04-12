@@ -30,7 +30,25 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Only retry 401 if:
+    // 1. It hasn't been retried yet
+    // 2. User has a valid token (not on login/signup)
+    // 3. Not a login/signup/forgot-password/reset-password request
+    const isAuthRequest =
+      originalRequest.url?.includes("login") ||
+      originalRequest.url?.includes("signup") ||
+      originalRequest.url?.includes("forgot-password") ||
+      originalRequest.url?.includes("reset-password") ||
+      originalRequest.url?.includes("verify-email");
+
+    const hasToken = Cookies.get("accessToken");
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      hasToken &&
+      !isAuthRequest
+    ) {
       originalRequest._retry = true;
       try {
         const response = await axios.post(
