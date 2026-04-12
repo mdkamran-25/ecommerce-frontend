@@ -2,29 +2,13 @@ import { useContext } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { CartContext } from "../context/CartContext";
-import { AuthContext } from "../context/AuthContext";
 import { useRouter } from "next/router";
+import ProtectedRoute from "../components/ProtectedRoute";
 
-export default function CartPage() {
+function CartPageContent() {
   const router = useRouter();
-  const { user } = useContext(AuthContext);
   const { cart, loading, removeFromCart, updateCartItem } =
     useContext(CartContext);
-
-  if (!user) {
-    return (
-      <div>
-        <Head>
-          <title>Shopping Cart - eCommerce Store</title>
-        </Head>
-        <div className="error">
-          <p>
-            Please <Link href="/auth/login">login</Link> to view your cart.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   if (loading) {
     return (
@@ -242,5 +226,13 @@ export default function CartPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function CartPage() {
+  return (
+    <ProtectedRoute>
+      <CartPageContent />
+    </ProtectedRoute>
   );
 }

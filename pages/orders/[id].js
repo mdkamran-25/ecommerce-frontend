@@ -2,8 +2,8 @@ import { useEffect, useState, useContext } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Link from "next/link";
-import { AuthContext } from "../../context/AuthContext";
 import * as orderService from "../../services/orderService";
+import ProtectedRoute from "../../components/ProtectedRoute";
 
 const OrderStatusBadge = ({ status }) => {
   const statusColors = {
@@ -33,21 +33,15 @@ const OrderStatusBadge = ({ status }) => {
   );
 };
 
-export default function OrderDetailPage() {
+function OrderDetailPageContent() {
   const router = useRouter();
   const { id } = router.query;
-  const { user } = useContext(AuthContext);
 
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
-
     if (!id) return;
 
     const fetchOrder = async () => {
@@ -64,11 +58,7 @@ export default function OrderDetailPage() {
     };
 
     fetchOrder();
-  }, [id, user, router]);
-
-  if (!user) {
-    return <div className="loading">Redirecting...</div>;
-  }
+  }, [id]);
 
   if (loading) {
     return (
@@ -437,5 +427,13 @@ export default function OrderDetailPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function OrderDetailPage() {
+  return (
+    <ProtectedRoute>
+      <OrderDetailPageContent />
+    </ProtectedRoute>
   );
 }

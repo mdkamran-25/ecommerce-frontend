@@ -60,7 +60,8 @@ export default function SignupPage() {
 
   const validatePassword = (pwd) => {
     // At least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return passwordRegex.test(pwd);
   };
 
@@ -103,7 +104,7 @@ export default function SignupPage() {
     // Checkpoint 4: Password strength
     if (!validatePassword(password)) {
       toast.error(
-        "Password must contain at least 8 characters, including uppercase, lowercase, number, and special character (@$!%*?&)"
+        "Password must contain at least 8 characters, including uppercase, lowercase, number, and special character (@$!%*?&)",
       );
       return;
     }
@@ -222,8 +223,6 @@ export default function SignupPage() {
       <div className="max-w-md p-8 mx-auto mt-8 bg-white border border-gray-200 rounded-lg">
         <h1 className="mb-6 text-3xl font-bold text-center">Create Account</h1>
 
-
-
         <form onSubmit={handleSignup}>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
@@ -297,10 +296,12 @@ export default function SignupPage() {
               required
               className="w-full input-field"
             />
-            
+
             {password && (
               <div className="mt-3 space-y-2">
-                <div className="text-sm font-semibold text-gray-700">Password Strength:</div>
+                <div className="text-sm font-semibold text-gray-700">
+                  Password Strength:
+                </div>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((level) => (
                     <div
@@ -310,8 +311,8 @@ export default function SignupPage() {
                           ? level <= 2
                             ? "bg-red-500"
                             : level <= 3
-                            ? "bg-yellow-500"
-                            : "bg-green-500"
+                              ? "bg-yellow-500"
+                              : "bg-green-500"
                           : "bg-gray-300"
                       }`}
                     />
@@ -323,25 +324,44 @@ export default function SignupPage() {
                   {getPasswordStrength(password) === 4 && "Good"}
                   {getPasswordStrength(password) === 5 && "Strong"}
                 </div>
-                
+
                 {password && !validatePassword(password) && (
                   <div className="p-3 mt-2 text-xs text-yellow-800 border border-yellow-200 rounded bg-yellow-50">
                     <strong>Password must have:</strong>
                     <ul className="mt-1 space-y-1 list-disc list-inside">
-                      <li className={password.length >= 8 ? "text-green-600" : ""}>
+                      <li
+                        className={password.length >= 8 ? "text-green-600" : ""}
+                      >
                         {password.length >= 8 ? "✓" : "✗"} At least 8 characters
                       </li>
-                      <li className={/[a-z]/.test(password) ? "text-green-600" : ""}>
-                        {/[a-z]/.test(password) ? "✓" : "✗"} Lowercase letter (a-z)
+                      <li
+                        className={
+                          /[a-z]/.test(password) ? "text-green-600" : ""
+                        }
+                      >
+                        {/[a-z]/.test(password) ? "✓" : "✗"} Lowercase letter
+                        (a-z)
                       </li>
-                      <li className={/[A-Z]/.test(password) ? "text-green-600" : ""}>
-                        {/[A-Z]/.test(password) ? "✓" : "✗"} Uppercase letter (A-Z)
+                      <li
+                        className={
+                          /[A-Z]/.test(password) ? "text-green-600" : ""
+                        }
+                      >
+                        {/[A-Z]/.test(password) ? "✓" : "✗"} Uppercase letter
+                        (A-Z)
                       </li>
-                      <li className={/\d/.test(password) ? "text-green-600" : ""}>
+                      <li
+                        className={/\d/.test(password) ? "text-green-600" : ""}
+                      >
                         {/\d/.test(password) ? "✓" : "✗"} Number (0-9)
                       </li>
-                      <li className={/[@$!%*?&]/.test(password) ? "text-green-600" : ""}>
-                        {/[@$!%*?&]/.test(password) ? "✓" : "✗"} Special character (@$!%*?&)
+                      <li
+                        className={
+                          /[@$!%*?&]/.test(password) ? "text-green-600" : ""
+                        }
+                      >
+                        {/[@$!%*?&]/.test(password) ? "✓" : "✗"} Special
+                        character (@$!%*?&)
                       </li>
                     </ul>
                   </div>
@@ -367,10 +387,14 @@ export default function SignupPage() {
               className="w-full input-field"
             />
             {password && confirmPassword && password !== confirmPassword && (
-              <div className="mt-2 text-sm text-red-600">✗ Passwords do not match</div>
+              <div className="mt-2 text-sm text-red-600">
+                ✗ Passwords do not match
+              </div>
             )}
             {password && confirmPassword && password === confirmPassword && (
-              <div className="mt-2 text-sm text-green-600">✓ Passwords match</div>
+              <div className="mt-2 text-sm text-green-600">
+                ✓ Passwords match
+              </div>
             )}
           </div>
 

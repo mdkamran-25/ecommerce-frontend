@@ -1,22 +1,16 @@
 import { useEffect, useState, useContext } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { AuthContext } from "../../context/AuthContext";
 import { useRouter } from "next/router";
 import * as orderService from "../../services/orderService";
+import ProtectedRoute from "../../components/ProtectedRoute";
 
-export default function OrdersListPage() {
+function OrdersListPageContent() {
   const router = useRouter();
-  const { user } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
-
     const fetchOrders = async () => {
       try {
         setLoading(true);
@@ -150,5 +144,13 @@ export default function OrdersListPage() {
         </div>
       )}
     </>
+  );
+}
+
+export default function OrdersListPage() {
+  return (
+    <ProtectedRoute>
+      <OrdersListPageContent />
+    </ProtectedRoute>
   );
 }

@@ -2,12 +2,11 @@ import { useState, useContext, useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { CartContext } from "../context/CartContext";
-import { AuthContext } from "../context/AuthContext";
 import * as orderService from "../services/orderService";
+import ProtectedRoute from "../components/ProtectedRoute";
 
-export default function CheckoutPage() {
+function CheckoutPageContent() {
   const router = useRouter();
-  const { user } = useContext(AuthContext);
   const { cart, emptyCart } = useContext(CartContext);
 
   const [addresses, setAddresses] = useState([]);
@@ -28,11 +27,6 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
-    if (!user) {
-      router.push("/auth/login");
-      return;
-    }
-
     const fetchAddresses = async () => {
       try {
         setLoading(true);
@@ -407,5 +401,13 @@ export default function CheckoutPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <ProtectedRoute>
+      <CheckoutPageContent />
+    </ProtectedRoute>
   );
 }
