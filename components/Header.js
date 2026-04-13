@@ -34,28 +34,28 @@ export default function Header() {
   return (
     <header className="bg-white border-b border-gray-200">
       {/* Top Navigation Bar */}
-      <nav className="max-w-7xl mx-auto px-4 py-3">
+      <nav className="px-4 py-3 mx-auto max-w-7xl">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
-            <span className="text-2xl font-bold bg-linear-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
+          <Link href="/" className="shrink-0">
+            <span className="text-2xl font-bold text-transparent bg-linear-to-r from-blue-600 to-blue-500 bg-clip-text">
               eCommerce
             </span>
           </Link>
 
           {/* Search Bar - Center */}
           <form onSubmit={handleSearch} className="flex-1 mx-8">
-            <div className="flex items-center bg-gray-100 rounded-lg overflow-hidden hover:border-gray-300 border border-transparent transition">
+            <div className="flex items-center overflow-hidden transition bg-gray-100 border border-transparent rounded-lg hover:border-gray-300">
               <input
                 type="text"
                 placeholder="Search for products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 px-4 py-3 bg-transparent outline-none text-gray-800 placeholder-gray-500"
+                className="flex-1 px-4 py-3 text-gray-800 placeholder-gray-500 bg-transparent outline-none"
               />
               <button
                 type="submit"
-                className="px-4 py-3 text-gray-600 hover:text-blue-600 transition"
+                className="px-4 py-3 text-gray-600 transition hover:text-blue-600"
                 title="Search"
               >
                 🔍
@@ -67,7 +67,7 @@ export default function Header() {
           <div className="flex items-center gap-3">
             {/* Wishlist */}
             <button
-              className="p-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+              className="p-2 text-gray-700 transition rounded-lg hover:text-red-600 hover:bg-red-50"
               title="Wishlist"
             >
               ♥️
@@ -75,7 +75,7 @@ export default function Header() {
 
             {/* Notifications */}
             <button
-              className="p-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+              className="p-2 text-gray-700 transition rounded-lg hover:text-blue-600 hover:bg-blue-50"
               title="Notifications"
             >
               🔔
@@ -83,7 +83,7 @@ export default function Header() {
 
             {/* Help */}
             <button
-              className="p-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
+              className="p-2 text-gray-700 transition rounded-lg hover:text-green-600 hover:bg-green-50"
               title="Help"
             >
               ❓
@@ -96,7 +96,7 @@ export default function Header() {
                 <div className="relative">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition flex items-center gap-2"
+                    className="flex items-center gap-2 p-2 text-gray-700 transition rounded-lg hover:bg-gray-100"
                     title="Account"
                   >
                     👤
@@ -107,7 +107,7 @@ export default function Header() {
 
                   {/* User Dropdown Menu */}
                   {showUserMenu && (
-                    <div className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg min-w-64 z-50">
+                    <div className="absolute right-0 z-50 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg top-full min-w-64">
                       {/* User Info */}
                       <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
                         <p className="font-semibold text-gray-900">
@@ -119,7 +119,7 @@ export default function Header() {
                       {/* Menu Items */}
                       <Link
                         href="/account/profile"
-                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition border-b border-gray-100"
+                        className="flex items-center px-4 py-3 text-gray-700 transition border-b border-gray-100 hover:bg-gray-50"
                         onClick={() => setShowUserMenu(false)}
                       >
                         <span className="mr-3">👤</span>
@@ -128,7 +128,7 @@ export default function Header() {
 
                       <Link
                         href="/orders"
-                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition border-b border-gray-100"
+                        className="flex items-center px-4 py-3 text-gray-700 transition border-b border-gray-100 hover:bg-gray-50"
                         onClick={() => setShowUserMenu(false)}
                       >
                         <span className="mr-3">📦</span>
@@ -137,7 +137,7 @@ export default function Header() {
 
                       <Link
                         href="/account/change-password"
-                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition border-b border-gray-100"
+                        className="flex items-center px-4 py-3 text-gray-700 transition border-b border-gray-100 hover:bg-gray-50"
                         onClick={() => setShowUserMenu(false)}
                       >
                         <span className="mr-3">🔐</span>
@@ -145,7 +145,7 @@ export default function Header() {
                       </Link>
 
                       <button
-                        className="w-full text-left flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition border-b border-gray-100"
+                        className="flex items-center w-full px-4 py-3 text-left text-gray-700 transition border-b border-gray-100 hover:bg-gray-50"
                         title="Account Settings"
                       >
                         <span className="mr-3">⚙️</span>
@@ -153,7 +153,7 @@ export default function Header() {
                       </button>
 
                       <button
-                        className="w-full text-left flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition border-b border-gray-100"
+                        className="flex items-center w-full px-4 py-3 text-left text-gray-700 transition border-b border-gray-100 hover:bg-gray-50"
                         title="Help Centre"
                       >
                         <span className="mr-3">💬</span>
@@ -163,7 +163,7 @@ export default function Header() {
                       {/* Logout Button */}
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition font-medium"
+                        className="w-full px-4 py-3 font-medium text-left text-red-600 transition hover:bg-red-50"
                       >
                         Sign out
                       </button>
@@ -174,12 +174,12 @@ export default function Header() {
                 {/* Cart Icon - Only for logged-in users */}
                 <Link
                   href="/cart"
-                  className="p-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition relative"
+                  className="relative p-2 text-gray-700 transition rounded-lg hover:text-blue-600 hover:bg-blue-50"
                   title="Shopping Cart"
                 >
                   🛒
                   {cart?.itemCount > 0 && (
-                    <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                    <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full">
                       {cart.itemCount}
                     </span>
                   )}
@@ -190,13 +190,13 @@ export default function Header() {
               <>
                 <Link
                   href="/auth/login"
-                  className="px-4 py-2 text-gray-700 font-medium hover:text-blue-600 hover:bg-gray-100 rounded-lg transition"
+                  className="px-4 py-2 font-medium text-gray-700 transition rounded-lg hover:text-blue-600 hover:bg-gray-100"
                 >
                   Sign in
                 </Link>
                 <Link
                   href="/auth/signup"
-                  className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
+                  className="px-4 py-2 font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700"
                 >
                   Sign up
                 </Link>
@@ -209,7 +209,7 @@ export default function Header() {
       {/* Horizontal Navigation Menu */}
       {user && (
         <div className="border-t border-gray-100 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 flex items-center gap-6 py-2 overflow-x-auto">
+          <div className="flex items-center gap-6 px-4 py-2 mx-auto overflow-x-auto max-w-7xl">
             <Link
               href="/products"
               className={`px-3 py-2 text-sm font-medium whitespace-nowrap transition ${
@@ -222,13 +222,13 @@ export default function Header() {
             </Link>
             <Link
               href="/products?category=new"
-              className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 whitespace-nowrap transition"
+              className="px-3 py-2 text-sm font-medium text-gray-700 transition hover:text-blue-600 whitespace-nowrap"
             >
               ✨ New Arrivals
             </Link>
             <Link
               href="/products?category=featured"
-              className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 whitespace-nowrap transition"
+              className="px-3 py-2 text-sm font-medium text-gray-700 transition hover:text-blue-600 whitespace-nowrap"
             >
               ⭐ Featured
             </Link>

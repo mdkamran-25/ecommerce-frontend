@@ -5,4 +5,4 @@ export const getProducts = (category, search, page = 1, limit = 10) =>
 
 export const getProduct = (id) => api.get(`/products/${id}`);
 
-export const getCategories = () => api.get("/categories");
+export const getCategories = () => api.get("/products/categories/list");
