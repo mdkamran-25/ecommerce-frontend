@@ -7,7 +7,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 
 function CheckoutPageContent() {
   const router = useRouter();
-  const { cart, emptyCart } = useContext(CartContext);
+  const { cart, emptyCart, validateStock } = useContext(CartContext);
 
   const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState("");
@@ -46,7 +46,7 @@ function CheckoutPageContent() {
     };
 
     fetchAddresses();
-  }, [user, router]);
+  }, [router]);
 
   const handleAddAddress = async (e) => {
     e.preventDefault();
@@ -83,6 +83,23 @@ function CheckoutPageContent() {
     }
   };
 
+  // Calculate estimated delivery date
+  const calculateEstimatedDelivery = () => {
+    const today = new Date();
+    // Standard delivery: 5-7 business days
+    const minDays = 5;
+    const maxDays = 7;
+
+    const minDate = new Date(today);
+    const maxDate = new Date(today);
+
+    minDate.setDate(minDate.getDate() + minDays);
+    maxDate.setDate(maxDate.getDate() + maxDays);
+
+    const options = { month: "short", day: "numeric" };
+    return `${minDate.toLocaleDateString("en-US", options)} - ${maxDate.toLocaleDateString("en-US", options)}`;
+  };
+
   const handleCreateOrder = async () => {
     if (!selectedAddressId) {
       setError("Please select a shipping address");
@@ -98,23 +115,147 @@ function CheckoutPageContent() {
       setCreating(true);
       setError("");
 
-      // Create order
-      const { data } = await orderService.createOrder(selectedAddressId);
+      // Step 0: Validate stock availability
+      try {
+        await validateStock();
+      } catch (validationErr) {
+        if (validationErr.response?.data?.invalidItems) {
+          const items = validationErr.response.data.invalidItems;
+          const itemsList = items
+            .map(
+              (item) =>
+                `${item.productName} (requested: ${item.requestedQuantity}, available: ${item.availableStock})`,
+            )
+            .join("\n");
+          setError(
+            `Stock validation failed:\n${itemsList}\n\nPlease update your cart quantities.`,
+          );
+        } else {
+          setError(
+            validationErr.response?.data?.error ||
+              "Stock validation failed. Please check your cart.",
+          );
+        }
+        setCreating(false);
+        return;
+      }
 
-      // Clear cart
-      await emptyCart();
+      // Step 1: Create order (pass coupon code if applied)
+      const { data } = await orderService.createOrder(
+        selectedAddressId,
+        cart.discountAmount || 0,
+        cart.couponCode || "",
+      );
+      const orderId = data.data.id;
+      const finalPrice = data.data.finalPrice;
 
-      // Redirect to order details
-      router.push(`/orders/${data.data.id}`);
+      // Step 2: Create Razorpay order
+      const paymentResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/payments/create-order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            orderId,
+            amount: finalPrice,
+          }),
+        },
+      );
+
+      if (!paymentResponse.ok) {
+        throw new Error("Failed to create payment order");
+      }
+
+      const paymentData = await paymentResponse.json();
+      const razorpayOrderId = paymentData.data.id;
+
+      // Step 3: Open Razorpay Checkout Modal
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
+        amount: Math.round(finalPrice * 100), // Amount in paise
+        currency: "INR",
+        name: "eCommerce Store",
+        description: `Order #${orderId}`,
+        order_id: razorpayOrderId,
+        handler: async (response) => {
+          try {
+            // Step 4: Verify payment on backend
+            console.log("[CHECKOUT] Razorpay response received:", response);
+            const verifyPayload = {
+              orderId,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            };
+
+            console.log(
+              "[CHECKOUT] Sending payment verification:",
+              verifyPayload,
+            );
+
+            const verifyResponse = await fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/payments/verify`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify(verifyPayload),
+              },
+            );
+
+            const verifyData = await verifyResponse.json();
+
+            if (!verifyResponse.ok) {
+              console.error("[CHECKOUT] Verification failed:", {
+                status: verifyResponse.status,
+                data: verifyData,
+              });
+              throw new Error(
+                verifyData.error || "Payment verification failed",
+              );
+            }
+
+            console.log("[CHECKOUT] ✅ Payment verified successfully");
+
+            // Payment successful
+            await emptyCart();
+            router.push(`/orders/${orderId}`);
+          } catch (err) {
+            setError(
+              "Payment verification failed. Order may still be pending.",
+            );
+            console.error("Verification error:", err);
+          } finally {
+            setCreating(false);
+          }
+        },
+        prefill: {
+          email: "", // User email if available
+          contact: "", // User phone if available
+        },
+        theme: {
+          color: "#3399cc",
+        },
+        modal: {
+          ondismiss: () => {
+            setCreating(false);
+            setError("Payment cancelled. Your order is pending.");
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to create order");
+      setError(err.message || "Failed to process payment");
       setCreating(false);
     }
   };
-
-  if (!user) {
-    return <div className="loading">Redirecting...</div>;
-  }
 
   if (loading) {
     return (
@@ -357,8 +498,31 @@ function CheckoutPageContent() {
               }}
             >
               <span>Shipping:</span>
-              <span>₹100</span>
+              <span
+                style={{
+                  color: cart?.couponCode === "FREESHIP" ? "#28a745" : "#000",
+                  fontWeight:
+                    cart?.couponCode === "FREESHIP" ? "bold" : "normal",
+                }}
+              >
+                {cart?.couponCode === "FREESHIP" ? "FREE" : "₹100"}
+              </span>
             </div>
+
+            {cart?.couponCode === "FREESHIP" && (
+              <div
+                style={{
+                  padding: "0.5rem",
+                  backgroundColor: "#d4edda",
+                  color: "#155724",
+                  borderRadius: "4px",
+                  marginBottom: "1rem",
+                  fontSize: "0.9rem",
+                }}
+              >
+                ✓ Free shipping applied with FREESHIP coupon
+              </div>
+            )}
 
             <div
               style={{
@@ -366,10 +530,34 @@ function CheckoutPageContent() {
                 justifyContent: "space-between",
                 fontSize: "1.2rem",
                 fontWeight: "bold",
+                marginBottom: "1.5rem",
               }}
             >
               <span>Total:</span>
-              <span>₹{((cart?.totalPrice || 0) + 100).toFixed(2)}</span>
+              <span>
+                ₹
+                {(
+                  (cart?.totalPrice || 0) +
+                  (cart?.couponCode === "FREESHIP" ? 0 : 100)
+                ).toFixed(2)}
+              </span>
+            </div>
+
+            <div
+              style={{
+                padding: "1rem",
+                backgroundColor: "#e7f3ff",
+                borderRadius: "4px",
+                marginBottom: "1rem",
+                borderLeft: "4px solid #007bff",
+              }}
+            >
+              <p style={{ marginBottom: "0.25rem", fontSize: "0.9rem" }}>
+                📦 Estimated Delivery
+              </p>
+              <p style={{ fontWeight: "bold", color: "#0056b3" }}>
+                {calculateEstimatedDelivery()}
+              </p>
             </div>
           </div>
 
@@ -385,7 +573,7 @@ function CheckoutPageContent() {
               marginBottom: "0.5rem",
             }}
           >
-            {creating ? "Creating Order..." : "Create Order"}
+            {creating ? "Processing Payment..." : "Pay Now"}
           </button>
 
           <button

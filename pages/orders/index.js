@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import * as orderService from "../../services/orderService";
 import ProtectedRoute from "../../components/ProtectedRoute";
+import { AuthContext } from "../../context/AuthContext";
 
 function OrdersListPageContent() {
   const router = useRouter();
+  const { user } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -134,11 +136,23 @@ function OrdersListPageContent() {
                 {order.items.length} item(s)
               </p>
 
-              <Link href={`/orders/${order.id}`}>
-                <button style={{ backgroundColor: "#007bff" }}>
-                  View Details
-                </button>
-              </Link>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <Link href={`/orders/${order.id}`}>
+                  <button style={{ backgroundColor: "#007bff" }}>
+                    View Details
+                  </button>
+                </Link>
+                {(order.orderStatus === "CONFIRMED" ||
+                  order.orderStatus === "PROCESSING" ||
+                  order.orderStatus === "SHIPPED" ||
+                  order.orderStatus === "DELIVERED") && (
+                  <Link href={`/orders/${order.id}/tracking`}>
+                    <button style={{ backgroundColor: "#28a745" }}>
+                      Track Order
+                    </button>
+                  </Link>
+                )}
+              </div>
             </div>
           ))}
         </div>

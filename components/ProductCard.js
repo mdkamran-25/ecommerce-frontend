@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 
 export default function ProductCard({ product }) {
   const router = useRouter();
@@ -19,11 +20,11 @@ export default function ProductCard({ product }) {
 
     try {
       await addToCart(product.id, 1);
-      alert("✅ Added to cart!");
+      toast.success("Added to cart!");
     } catch (error) {
-      alert(
-        "❌ Failed to add to cart: " + error.response?.data?.error ||
-          error.message,
+      toast.error(
+        "Failed to add to cart: " +
+          (error.response?.data?.error || error.message),
       );
     }
   };

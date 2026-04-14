@@ -6,6 +6,7 @@ export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(null);
+  const [pricing, setPricing] = useState(null);
   const [loading, setLoading] = useState(false);
   const { user } = useContext(AuthContext);
 
@@ -19,6 +20,17 @@ export const CartProvider = ({ children }) => {
       console.error("Failed to fetch cart:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCartWithPricing = async () => {
+    if (!user) return;
+    try {
+      const { data } = await cartService.getCartWithPricing();
+      setCart(data.data);
+      setPricing(data.data.pricing);
+    } catch (error) {
+      console.error("Failed to fetch cart pricing:", error);
     }
   };
 
@@ -55,10 +67,49 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const applyCoupon = async (couponCode) => {
+    try {
+      const { data } = await cartService.applyCoupon(couponCode);
+      setPricing(
+        data.data.pricing || {
+          subtotal: data.data.subtotal,
+          discountAmount: data.data.discountAmount,
+          tax: 0,
+          shipping: 0,
+          totalPrice: 0,
+        },
+      );
+      await fetchCart();
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const removeCoupon = async () => {
+    try {
+      await cartService.removeCoupon();
+      setPricing(null);
+      await fetchCart();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const validateStock = async () => {
+    try {
+      const { data } = await cartService.validateCartStock();
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const emptyCart = async () => {
     try {
       await cartService.clearCart();
       setCart(null);
+      setPricing(null);
     } catch (error) {
       throw error;
     }
@@ -68,11 +119,16 @@ export const CartProvider = ({ children }) => {
     <CartContext.Provider
       value={{
         cart,
+        pricing,
         loading,
         fetchCart,
+        fetchCartWithPricing,
         addToCart,
         removeFromCart,
         updateCartItem,
+        applyCoupon,
+        removeCoupon,
+        validateStock,
         emptyCart,
       }}
     >

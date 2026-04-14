@@ -1,0 +1,503 @@
+import { useState, useEffect, useContext } from "react";
+import { useRouter } from "next/router";
+import Head from "next/head";
+import { AuthContext } from "../../../context/AuthContext";
+import * as orderService from "../../../services/orderService";
+import { toast } from "react-toastify";
+
+function OrderTrackingPage() {
+  const router = useRouter();
+  const { user } = useContext(AuthContext);
+  const { id: orderId } = router.query;
+
+  const [order, setOrder] = useState(null);
+  const [timeline, setTimeline] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!orderId) return;
+
+    const fetchOrderDetails = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch order details
+        const { data: orderData } = await orderService.getOrder(orderId);
+        setOrder(orderData.data);
+
+        // Fetch timeline if available
+        try {
+          const { data: timelineData } =
+            await orderService.getOrderTimeline(orderId);
+          setTimeline(timelineData.data.events);
+        } catch (err) {
+          console.log("Timeline not available");
+        }
+      } catch (err) {
+        console.error("Failed to fetch order:", err);
+        toast.error("Failed to load order details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrderDetails();
+  }, [orderId]);
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "DELIVERED":
+        return "#28a745";
+      case "SHIPPED":
+        return "#007bff";
+      case "PROCESSING":
+        return "#ffc107";
+      case "CONFIRMED":
+        return "#17a2b8";
+      case "PENDING":
+        return "#6c757d";
+      default:
+        return "#495057";
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    const statusMap = {
+      PENDING: { label: "Pending", icon: "⏳" },
+      CONFIRMED: { label: "Confirmed", icon: "✅" },
+      PROCESSING: { label: "Processing", icon: "⚙️" },
+      SHIPPED: { label: "Shipped", icon: "🚚" },
+      DELIVERED: { label: "Delivered", icon: "🎉" },
+      CANCELLED: { label: "Cancelled", icon: "❌" },
+    };
+    return statusMap[status] || { label: status, icon: "📦" };
+  };
+
+  if (loading) {
+    return (
+      <div>
+        <Head>
+          <title>Order Tracking</title>
+        </Head>
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p>Loading order details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div>
+        <Head>
+          <title>Order Not Found</title>
+        </Head>
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <h2 style={{ color: "#dc3545" }}>Order not found</h2>
+          <button
+            onClick={() => router.push("/orders")}
+            style={{
+              marginTop: "1rem",
+              padding: "0.75rem 1.5rem",
+              backgroundColor: "#007bff",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Back to Orders
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const orderDate = new Date(order.createdAt).toLocaleDateString("en-IN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const statusBadge = getStatusBadge(order.orderStatus);
+
+  return (
+    <>
+      <Head>
+        <title>Order Tracking - {order.orderNumber}</title>
+      </Head>
+
+      <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
+        {/* Header */}
+        <div
+          style={{
+            marginBottom: "2rem",
+            textAlign: "center",
+            borderBottom: "2px solid #eee",
+            paddingBottom: "1.5rem",
+          }}
+        >
+          <h1 style={{ margin: "0 0 0.5rem 0" }}>Order Tracking</h1>
+          <p style={{ margin: "0", color: "#666", fontSize: "0.95rem" }}>
+            Order Number: <strong>{order.orderNumber}</strong>
+          </p>
+          <p
+            style={{
+              margin: "0.3rem 0 0 0",
+              color: "#999",
+              fontSize: "0.85rem",
+            }}
+          >
+            Ordered on {orderDate}
+          </p>
+        </div>
+
+        {/* Order Status Card */}
+        <div
+          style={{
+            backgroundColor: "#f8f9fa",
+            borderRadius: "8px",
+            padding: "1.5rem",
+            marginBottom: "2rem",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ fontSize: "3rem", marginBottom: "0.5rem" }}>
+            {statusBadge.icon}
+          </div>
+          <h2
+            style={{
+              margin: "0",
+              color: getStatusColor(order.orderStatus),
+              fontSize: "1.8rem",
+            }}
+          >
+            {statusBadge.label}
+          </h2>
+          <p style={{ margin: "0.5rem 0 0 0", color: "#666" }}>
+            Last updated {new Date(order.updatedAt).toLocaleDateString()}
+          </p>
+        </div>
+
+        {/* Tracking Information */}
+        {(order.trackingNumber || order.carrierName) && (
+          <div
+            style={{
+              backgroundColor: "#fff",
+              border: "1px solid #ddd",
+              borderRadius: "8px",
+              padding: "1.5rem",
+              marginBottom: "2rem",
+            }}
+          >
+            <h3 style={{ marginTop: 0, marginBottom: "1rem" }}>
+              Tracking Information
+            </h3>
+
+            {order.carrierName && (
+              <div style={{ marginBottom: "1rem" }}>
+                <label
+                  style={{
+                    display: "block",
+                    color: "#666",
+                    fontSize: "0.9rem",
+                    marginBottom: "0.25rem",
+                  }}
+                >
+                  Courier
+                </label>
+                <p
+                  style={{ margin: 0, fontSize: "1.1rem", fontWeight: "bold" }}
+                >
+                  {order.carrierName}
+                </p>
+              </div>
+            )}
+
+            {order.trackingNumber && (
+              <div style={{ marginBottom: "1rem" }}>
+                <label
+                  style={{
+                    display: "block",
+                    color: "#666",
+                    fontSize: "0.9rem",
+                    marginBottom: "0.25rem",
+                  }}
+                >
+                  Tracking Number
+                </label>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "1.2rem",
+                    fontFamily: "monospace",
+                    fontWeight: "bold",
+                    color: "#007bff",
+                    backgroundColor: "#f0f8ff",
+                    padding: "0.75rem",
+                    borderRadius: "4px",
+                  }}
+                >
+                  {order.trackingNumber}
+                </p>
+              </div>
+            )}
+
+            {order.estimatedDeliveryDate && (
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    color: "#666",
+                    fontSize: "0.9rem",
+                    marginBottom: "0.25rem",
+                  }}
+                >
+                  Estimated Delivery
+                </label>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "1.1rem",
+                    fontWeight: "bold",
+                    color: "#28a745",
+                  }}
+                >
+                  {new Date(order.estimatedDeliveryDate).toLocaleDateString(
+                    "en-IN",
+                    {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    },
+                  )}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Timeline */}
+        {timeline && timeline.length > 0 && (
+          <div style={{ marginBottom: "2rem" }}>
+            <h3 style={{ marginBottom: "1.5rem" }}>Order Timeline</h3>
+
+            <div style={{ position: "relative" }}>
+              {timeline.map((event, index) => (
+                <div
+                  key={index}
+                  style={{ display: "flex", marginBottom: "1.5rem" }}
+                >
+                  {/* Timeline line */}
+                  {index < timeline.length - 1 && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: "12px",
+                        top: "40px",
+                        width: "2px",
+                        height: "60px",
+                        backgroundColor: "#ddd",
+                      }}
+                    />
+                  )}
+
+                  {/* Timeline dot */}
+                  <div
+                    style={{
+                      width: "30px",
+                      minWidth: "30px",
+                      height: "30px",
+                      borderRadius: "50%",
+                      backgroundColor: "#007bff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "white",
+                      fontSize: "0.9rem",
+                      marginRight: "1rem",
+                      zIndex: 1,
+                      position: "relative",
+                    }}
+                  >
+                    {event.icon}
+                  </div>
+
+                  {/* Event details */}
+                  <div style={{ flex: 1, paddingTop: "0.25rem" }}>
+                    <h4 style={{ margin: "0 0 0.25rem 0" }}>{event.title}</h4>
+                    <p style={{ margin: 0, color: "#666", fontSize: "0.9rem" }}>
+                      {event.description}
+                    </p>
+                    <p
+                      style={{
+                        margin: "0.5rem 0 0 0",
+                        color: "#999",
+                        fontSize: "0.8rem",
+                      }}
+                    >
+                      {new Date(event.timestamp).toLocaleDateString("en-IN", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Shipping Address */}
+        {order.shippingAddress && (
+          <div
+            style={{
+              backgroundColor: "#fff",
+              border: "1px solid #ddd",
+              borderRadius: "8px",
+              padding: "1.5rem",
+              marginBottom: "2rem",
+            }}
+          >
+            <h3 style={{ marginTop: 0, marginBottom: "1rem" }}>
+              Shipping Address
+            </h3>
+            <p style={{ margin: "0.3rem 0" }}>
+              <strong>{order.shippingAddress.fullName}</strong>
+            </p>
+            <p style={{ margin: "0.3rem 0" }}>{order.shippingAddress.street}</p>
+            <p style={{ margin: "0.3rem 0" }}>
+              {order.shippingAddress.city}, {order.shippingAddress.state}{" "}
+              {order.shippingAddress.postalCode}
+            </p>
+            <p style={{ margin: "0.3rem 0" }}>
+              Phone: {order.shippingAddress.phone}
+            </p>
+          </div>
+        )}
+
+        {/* Order Summary */}
+        <div
+          style={{
+            backgroundColor: "#fff",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            padding: "1.5rem",
+          }}
+        >
+          <h3 style={{ marginTop: 0, marginBottom: "1rem" }}>Order Summary</h3>
+
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ borderBottom: "2px solid #eee" }}>
+                <th style={{ textAlign: "left", padding: "0.5rem 0" }}>Item</th>
+                <th style={{ textAlign: "center", padding: "0.5rem 0" }}>
+                  Qty
+                </th>
+                <th style={{ textAlign: "right", padding: "0.5rem 0" }}>
+                  Price
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {order.items.map((item, index) => (
+                <tr key={index} style={{ borderBottom: "1px solid #eee" }}>
+                  <td style={{ padding: "0.75rem 0" }}>{item.product.name}</td>
+                  <td style={{ textAlign: "center", padding: "0.75rem 0" }}>
+                    {item.quantity}
+                  </td>
+                  <td style={{ textAlign: "right", padding: "0.75rem 0" }}>
+                    ₹{(item.price * item.quantity).toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div
+            style={{
+              marginTop: "1rem",
+              paddingTop: "1rem",
+              borderTop: "1px solid #eee",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "0.5rem",
+              }}
+            >
+              <span>Subtotal:</span>
+              <span>₹{order.totalPrice.toFixed(2)}</span>
+            </div>
+            {order.discountAmount > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "0.5rem",
+                  color: "#28a745",
+                }}
+              >
+                <span>Discount:</span>
+                <span>-₹{order.discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "0.5rem",
+              }}
+            >
+              <span>Shipping:</span>
+              <span>₹{order.shippingCost.toFixed(2)}</span>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                fontSize: "1.2rem",
+                fontWeight: "bold",
+                color: "#007bff",
+              }}
+            >
+              <span>Total:</span>
+              <span>₹{order.finalPrice.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Back Button */}
+        <div style={{ marginTop: "2rem", textAlign: "center" }}>
+          <button
+            onClick={() => router.push("/orders")}
+            style={{
+              padding: "0.75rem 1.5rem",
+              backgroundColor: "#6c757d",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "1rem",
+            }}
+          >
+            Back to Orders
+          </button>
+        </div>
+      </div>
+
+      <style jsx>{`
+        button:hover {
+          opacity: 0.9;
+        }
+      `}</style>
+    </>
+  );
+}
+
+export default OrderTrackingPage;

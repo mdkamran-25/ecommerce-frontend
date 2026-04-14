@@ -12,28 +12,48 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is logged in on mount
   useEffect(() => {
-    const token = Cookies.get("accessToken");
-    if (token) {
-      try {
+    try {
+      const token = Cookies.get("accessToken");
+      if (token) {
         // Decode JWT to get user info
-        const decoded = JSON.parse(atob(token.split(".")[1]));
+        const parts = token.split(".");
+        if (parts.length !== 3) {
+          throw new Error("Invalid token format");
+        }
 
-        // Only accept CUSTOMER role, reject ADMIN tokens
-        if (decoded.role === "CUSTOMER") {
-          setUser(decoded);
-        } else {
-          // Reject non-customer tokens (e.g., ADMIN tokens)
-          console.warn("Admin token detected in customer context. Clearing.");
+        const decoded = JSON.parse(atob(parts[1]));
+        console.log("🔐 Session restored from cookie:", decoded);
+
+        // Check if token is expired
+        const now = Math.floor(Date.now() / 1000);
+        if (decoded.exp && decoded.exp < now) {
+          console.warn("⚠️ Token expired, clearing session");
           Cookies.remove("accessToken");
           Cookies.remove("refreshToken");
+          setUser(null);
+        } else if (decoded.role === "CUSTOMER") {
+          // Only accept CUSTOMER role, reject ADMIN tokens
+          setUser(decoded);
+          console.log("✅ Customer session active");
+        } else {
+          // Reject non-customer tokens (e.g., ADMIN tokens)
+          console.warn("⚠️ Admin token detected, clearing");
+          Cookies.remove("accessToken");
+          Cookies.remove("refreshToken");
+          setUser(null);
         }
-      } catch (err) {
-        console.error("Failed to decode token:", err);
-        Cookies.remove("accessToken");
-        Cookies.remove("refreshToken");
+      } else {
+        console.log("ℹ️ No token found, user not logged in");
+        setUser(null);
       }
+    } catch (err) {
+      console.error("❌ Session restoration error:", err);
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   // Signup function
@@ -80,29 +100,62 @@ export const AuthProvider = ({ children }) => {
       setAuthLoading(true);
       setError(null);
 
-      const { data } = await authService.login(email, password);
+      console.log("🔐 Attempting login for:", email);
+
+      const response = await authService.login(email, password);
+      console.log("✅ Login response:", response);
+
+      const { data } = response;
+
+      // Validate response structure
+      if (!data?.data?.accessToken) {
+        console.error("❌ Invalid response structure:", data);
+        throw new Error("Invalid login response from server (missing tokens)");
+      }
+
+      console.log("📦 Response data:", data);
 
       // Store tokens
       Cookies.set("accessToken", data.data.accessToken);
       Cookies.set("refreshToken", data.data.refreshToken);
+      console.log("✅ Tokens stored in cookies");
 
       // Decode and set user
-      const decoded = JSON.parse(atob(data.data.accessToken.split(".")[1]));
+      try {
+        const tokenParts = data.data.accessToken.split(".");
+        if (tokenParts.length !== 3) {
+          throw new Error("Invalid token format (not 3 parts)");
+        }
+        const decoded = JSON.parse(atob(tokenParts[1]));
+        console.log("✅ Token decoded:", decoded);
 
-      // Validate role is CUSTOMER
-      if (decoded.role !== "CUSTOMER") {
-        // Clear admin tokens if trying to login with admin account
+        // Validate role is CUSTOMER
+        if (decoded.role !== "CUSTOMER") {
+          console.warn("⚠️ Non-customer role detected:", decoded.role);
+          // Clear admin tokens if trying to login with admin account
+          Cookies.remove("accessToken");
+          Cookies.remove("refreshToken");
+          throw new Error(
+            "Admin accounts cannot log in to the customer portal",
+          );
+        }
+
+        setUser(decoded);
+        console.log("✅ User set in context:", decoded);
+      } catch (decodeErr) {
+        console.error("❌ Token decode error:", decodeErr);
         Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
-        throw new Error("Admin accounts cannot log in to the customer portal");
+        throw new Error(`Failed to decode login token: ${decodeErr.message}`);
       }
-
-      setUser(decoded);
 
       return data;
     } catch (err) {
+      console.error("❌ Login error:", err);
       const errorMessage =
-        err.response?.data?.error || "Login failed. Please try again.";
+        err.response?.data?.error ||
+        err.message ||
+        "Login failed. Please try again.";
       setError(errorMessage);
       throw err;
     } finally {

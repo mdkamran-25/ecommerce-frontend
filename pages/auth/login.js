@@ -73,29 +73,43 @@ export default function LoginPage() {
 
     try {
       setIsLoading(true);
-      await login(email, password);
-      // AuthContext handles token storage and user state
-      // Redirect to home
-      router.push("/");
+      console.log("🔐 Initiating login for:", email);
+
+      const result = await login(email, password);
+      console.log("✅ Login successful, result:", result);
+
+      // Wait a moment for user state to update
+      setTimeout(() => {
+        console.log("🚀 Redirecting to home...");
+        router.push("/");
+      }, 500);
     } catch (err) {
+      console.error("❌ Login failed:", err);
+
       const errorMessage = err.response?.data?.error;
       const requiresVerification = err.response?.data?.requiresVerification;
       const unverifiedEmailAddr = err.response?.data?.email;
 
       if (requiresVerification) {
+        console.warn("⚠️ Email not verified");
         setUnverifiedEmail(unverifiedEmailAddr || email);
         toast.warning("Please verify your email to continue");
       } else if (errorMessage?.includes("not found")) {
+        console.warn("⚠️ Email not found");
         toast.error("Email not found. Please sign up first.");
       } else if (
         errorMessage?.includes("incorrect") ||
         errorMessage?.includes("Invalid")
       ) {
+        console.warn("⚠️ Invalid credentials");
         toast.error("Incorrect email or password. Please try again.");
+      } else if (errorMessage?.includes("Admin")) {
+        console.warn("⚠️ Admin account attempted");
+        toast.error(errorMessage);
       } else {
+        console.error("❌ Unknown error:", errorMessage);
         toast.error(errorMessage || "Login failed. Please try again.");
       }
-      console.error("Login error:", err);
     } finally {
       setIsLoading(false);
     }

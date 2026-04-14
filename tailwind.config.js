@@ -7,6 +7,16 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: [
+          "Plus Jakarta Sans",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"Segoe UI"',
+          "sans-serif",
+        ],
+        display: ["Plus Jakarta Sans"],
+      },
       colors: {
         primary: "#007bff",
         secondary: "#6c757d",
