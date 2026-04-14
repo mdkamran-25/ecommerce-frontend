@@ -1,31 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "./app/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {
-      fontFamily: {
-        sans: [
-          "Plus Jakarta Sans",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          '"Segoe UI"',
-          "sans-serif",
-        ],
-        display: ["Plus Jakarta Sans"],
-      },
-      colors: {
-        primary: "#007bff",
-        secondary: "#6c757d",
-        success: "#28a745",
-        danger: "#dc3545",
-        warning: "#ffc107",
-        info: "#17a2b8",
-      },
-    },
+    extend: {},
   },
   plugins: [],
 };

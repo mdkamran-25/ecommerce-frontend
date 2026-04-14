@@ -1,14 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  swcMinify: true,
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "**",
+        protocol: "http",
+        hostname: "localhost",
+        port: "5001",
       },
       {
-        protocol: "http",
+        protocol: "https",
         hostname: "**",
       },
     ],
