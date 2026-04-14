@@ -3,29 +3,34 @@
  * Hero section component (TypeScript)
  */
 
-import { ReactNode } from "react";
+import Link from "next/link";
 import { FiSearch } from "react-icons/fi";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 interface HeroProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onSearch: (e: React.FormEvent<HTMLFormElement>) => void;
-  children?: ReactNode;
 }
 
 const Hero: React.FC<HeroProps> = ({
   searchQuery,
   onSearchChange,
   onSearch,
-  children,
 }) => {
   return (
     <section className="grid min-h-screen grid-cols-1 gap-0 md:grid-cols-3">
       {/* Left: Categories, Search & Text Content */}
-      <div className="flex flex-col px-6 py-12 md:px-8">
+      <div className="flex flex-col ">
         {/* Categories Section */}
         <div className="mb-8">
-          <div className="space-y-1">
+          <div
+            className="space-y-1"
+            style={{
+              fontFamily:
+                "'Beatrice Deck Trial', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+            }}
+          >
             {["MEN", "WOMEN", "KIDS"].map((category) => (
               <p
                 key={category}
@@ -55,10 +60,10 @@ const Hero: React.FC<HeroProps> = ({
         </div>
 
         {/* Text Content */}
-        <div className="flex flex-col justify-between flex-1">
+        <div className="flex flex-col flex-1">
           <div>
             <h1
-              className="text-5xl font-light leading-tight text-gray-900 md:text-6xl"
+              className="text-5xl font-bold leading-tight text-gray-500 md:text-6xl"
               style={{
                 fontFamily:
                   "'Beatrice Deck Trial', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
@@ -68,37 +73,58 @@ const Hero: React.FC<HeroProps> = ({
             </h1>
           </div>
 
-          {/* Go To Shop Button - Now on Left Side */}
-          {children}
+          {/* Go To Shop Button & Carousel Controls */}
+          <div className="flex items-center gap-4 mt-36">
+            <Link
+              href="/products"
+              className="inline-flex items-center gap-24 px-4 py-3 text-lg font-semibold text-gray-800 transition bg-transparent border border-gray-400 font-beatrice hover:text-black group w-fit"
+            >
+              Go To Shop
+              <svg
+                width="49"
+                height="14"
+                viewBox="0 0 49 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M0.75 6.75H48.25M48.25 6.75L42.25 0.75M48.25 6.75L42.25 12.75"
+                  stroke="black"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </Link>
+
+            {/* Carousel Controls */}
+            <div className="flex gap-2 ml-auto">
+              <button className="flex items-center justify-center w-12 h-12 text-gray-800 transition border border-gray-400 hover:bg-gray-800 hover:text-white hover:border-gray-800">
+                <IoIosArrowBack className="w-5 h-5" />
+              </button>
+              <button className="flex items-center justify-center w-12 h-12 text-gray-800 transition border border-gray-400 hover:bg-gray-800 hover:text-white hover:border-gray-800">
+                <IoIosArrowForward className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Center: Large Image */}
-      <div className="flex items-center justify-center bg-linear-to-br from-gray-100 to-gray-50">
-        <img
-          src="/img/Homepageimage2.png"
-          alt="Featured Collection"
-          className="object-cover w-full h-full"
-        />
-      </div>
-
-      {/* Right: Featured Product & CTA */}
-      <div className="flex flex-col items-center justify-between p-8 bg-white md:p-12">
-        <div className="w-full">
+      {/* Center & Right: Perfect Square Images Grid */}
+      <div className="flex items-center justify-end col-span-2 gap-8 ">
+        <div className="shrink-0">
           <img
-            src="/img/HomepageImage1.png"
-            alt="Featured Product"
-            className="object-cover w-full h-64 mb-6 rounded-lg"
+            src="/img/Homepageimage1.png"
+            alt="Featured Collection"
+            className="object-cover h-96 w-96"
           />
-          <h2 className="mb-2 text-2xl font-light text-gray-900">
-            Featured Item
-          </h2>
-          <p className="mb-6 text-sm font-light text-gray-600">
-            Handpicked exclusive piece from our newest collection
-          </p>
-          <button className="w-full px-6 py-3 text-sm font-medium text-white transition bg-gray-900 rounded-lg hover:bg-gray-800">
-            Discover Now
-          </button>
+        </div>
+        <div className="shrink-0">
+          <img
+            src="/img/HomepageImage2.png"
+            alt="Featured Product"
+            className="object-cover w-96 h-96 "
+          />
         </div>
       </div>
     </section>

@@ -6,7 +6,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { CartContext } from "../context/CartContext";
 import { productService } from "../services/productService";
 import { Product } from "../types";
@@ -102,42 +101,7 @@ export default function Home({}: HomeProps): React.JSX.Element {
           searchQuery={heroSearchQuery}
           onSearchChange={setHeroSearchQuery}
           onSearch={handleHeroSearch}
-        >
-          {/* Additional Hero Content */}
-          <div className="mt-12">
-            <Link
-              href="/products"
-              className="inline-flex items-center gap-24 px-4 py-2 text-lg font-semibold text-gray-800 transition bg-transparent border border-gray-400 font-beatrice hover:text-black group w-fit"
-            >
-              Go To Shop
-              <svg
-                width="49"
-                height="14"
-                viewBox="0 0 49 14"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0.75 6.75H48.25M48.25 6.75L42.25 0.75M48.25 6.75L42.25 12.75"
-                  stroke="black"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Link>
-
-            {/* Carousel Controls */}
-            <div className="flex gap-2 mt-4">
-              <button className="flex items-center justify-center w-12 h-12 text-gray-800 transition border border-gray-400 hover:bg-gray-800 hover:text-white hover:border-gray-800">
-                <IoIosArrowBack className="w-5 h-5" />
-              </button>
-              <button className="flex items-center justify-center w-12 h-12 text-gray-800 transition border border-gray-400 hover:bg-gray-800 hover:text-white hover:border-gray-800">
-                <IoIosArrowForward className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </Hero>
+        />
 
         {/* NEW THIS WEEK SECTION */}
         {cartContext && (
