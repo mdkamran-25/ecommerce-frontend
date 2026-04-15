@@ -8,7 +8,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import SectionTitle from "../atoms/SectionTitle";
 import ProductGrid from "../molecules/ProductGrid";
 import CategoryFilter from "../molecules/CategoryFilter";
-import { Product } from "../molecules/ProductCard";
+import { Product } from "../../types";
 import Text from "../atoms/Text";
 
 interface CollectionsSectionProps {

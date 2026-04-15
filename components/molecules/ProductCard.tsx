@@ -8,17 +8,7 @@ import Link from "next/link";
 import ProductImage from "../atoms/ProductImage";
 import Text from "../atoms/Text";
 import Price from "../atoms/Price";
-
-export interface Product {
-  id: string | number;
-  name: string;
-  image?: string;
-  images?: string[];
-  price?: number;
-  category?: string | { id: string; name: string; slug?: string };
-  description?: string;
-  variantCount?: number;
-}
+import { Product } from "../../types";
 
 interface ProductCardProps {
   product: Product;
@@ -36,7 +26,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product Image Container */}
       <div className="relative mb-4">
         <ProductImage
-          src={product.image || product.images?.[0]}
+          src={product.images?.[0]}
           alt={product.name}
           productId={product.id}
         />

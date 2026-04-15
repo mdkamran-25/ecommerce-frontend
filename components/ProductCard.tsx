@@ -46,10 +46,10 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
 
   return (
     <div className="card hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-      {(product.images?.[0] || product.image) && (
+      {product.images?.[0] && (
         <div className="mb-4">
           <img
-            src={product.images?.[0] || product.image}
+            src={product.images[0]}
             alt={product.name}
             className="w-full h-48 object-cover rounded-lg"
           />

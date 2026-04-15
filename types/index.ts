@@ -9,11 +9,14 @@ export interface Product {
   images?: string[];
   price?: number;
   compareAt?: number;
-  category?: string;
+  category?: string | { name: string; slug?: string; id?: string | number };
   description?: string;
   stock?: number;
   rating?: number;
   reviews?: number;
+  sku?: string;
+  variantCount?: number;
+  variants?: Array<{ id: string; type: string; value: string; stock: number }>;
 }
 
 export interface CartItem extends Product {

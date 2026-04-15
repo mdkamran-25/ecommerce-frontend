@@ -11,23 +11,8 @@ import productService from "../../services/productService";
 import reviewService from "../../services/reviewService";
 import { CartContext } from "../../context/CartContext";
 import { AuthContext } from "../../context/AuthContext";
+import { Product } from "../../types";
 import { toast } from "react-toastify";
-
-/**
- * Product interface
- */
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  compareAt?: number;
-  stock: number;
-  sku?: string;
-  images?: string[];
-  category?: { name: string };
-  variants?: Array<{ id: string; type: string; value: string; stock: number }>;
-}
 
 /**
  * Review interface
@@ -378,7 +363,10 @@ const ProductDetail: FC = () => {
 
           {product.category && (
             <p style={{ marginBottom: "1rem", color: "#666" }}>
-              <strong>Category:</strong> {product.category.name}
+              <strong>Category:</strong>{" "}
+              {typeof product.category === "string"
+                ? product.category
+                : product.category?.name}
             </p>
           )}
 

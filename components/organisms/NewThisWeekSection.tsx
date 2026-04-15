@@ -8,7 +8,7 @@ import Link from "next/link";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import SectionTitle from "../atoms/SectionTitle";
 import ProductGrid from "../molecules/ProductGrid";
-import { Product } from "../molecules/ProductCard";
+import { Product } from "../../types";
 
 interface NewThisWeekSectionProps {
   products?: Product[];
