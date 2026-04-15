@@ -63,7 +63,7 @@ const Hero: React.FC<HeroProps> = ({
         <div className="flex flex-col flex-1">
           <div>
             <h1
-              className="text-5xl font-bold leading-tight text-gray-500 md:text-6xl"
+              className="text-6xl font-extrabold uppercase leading-none tracking-[-0.04em] text-black/60 [text-shadow:0_0_1px_rgba(0,0,0,0.1)]"
               style={{
                 fontFamily:
                   "'Beatrice Deck Trial', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
@@ -71,10 +71,28 @@ const Hero: React.FC<HeroProps> = ({
             >
               New Collection
             </h1>
+            <h2
+              className="mt-0 text-xl font-light text-black/60"
+              style={{
+                fontFamily:
+                  "'Beatrice Deck Trial', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+              }}
+            >
+              Summer
+            </h2>
+            <span
+              className="text-black/60"
+              style={{
+                fontFamily:
+                  "'Beatrice Deck Trial', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+              }}
+            >
+              2026
+            </span>
           </div>
 
           {/* Go To Shop Button & Carousel Controls */}
-          <div className="flex items-center gap-4 mt-36">
+          <div className="flex items-center gap-4 mt-32">
             <Link
               href="/products"
               className="inline-flex items-center gap-24 px-4 py-3 text-lg font-semibold text-gray-800 transition bg-transparent border border-gray-400 font-beatrice hover:text-black group w-fit"
