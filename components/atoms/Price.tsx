@@ -20,7 +20,7 @@ export const Price: React.FC<PriceProps> = ({
     typeof amount === "number" ? amount.toFixed(2) : amount || "0.00";
 
   return (
-    <p className={`text-sm text-gray-600 ${className}`}>
+    <p className={`text-sm font-semibold text-gray-800 ${className}`}>
       {currency}
       {formattedPrice}
     </p>

@@ -22,7 +22,7 @@ export const ProductImage: React.FC<ProductImageProps> = ({
   return (
     <Link href={`/products/${productId}`}>
       <div
-        className={`mb-4 overflow-hidden bg-gray-100 rounded aspect-square cursor-pointer group ${className}`}
+        className={`overflow-hidden bg-gray-50 border border-gray-300 rounded aspect-square cursor-pointer group transition hover:border-gray-600 ${className}`}
       >
         <img
           src={src || "https://via.placeholder.com/300x300"}

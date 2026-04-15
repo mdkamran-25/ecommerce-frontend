@@ -22,8 +22,8 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
   className = "",
 }) => {
   const columnClasses = {
-    3: "lg:grid-cols-3",
-    4: "lg:grid-cols-4",
+    3: "md:grid-cols-3",
+    4: "md:grid-cols-4",
   };
 
   const gapClasses = {

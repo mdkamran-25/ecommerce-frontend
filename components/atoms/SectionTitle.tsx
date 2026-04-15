@@ -16,9 +16,9 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({
   children,
   separator = false,
   className = "",
-  level = "h3",
+  level = "h2",
 }) => {
-  const baseClass = "text-4xl font-black md:text-5xl font-beatrice";
+  const baseClass = "font-black font-beatrice";
   const Tag = level as keyof JSX.IntrinsicElements;
 
   return React.createElement(
@@ -26,7 +26,7 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({
     { className: `${baseClass} ${className}` },
     <>
       {children}
-      {separator && <span className="ml-2 text-xl text-blue-600">(SO)</span>}
+      {separator && <span className="ml-2 text-blue-600">(SO)</span>}
     </>,
   );
 };

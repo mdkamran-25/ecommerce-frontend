@@ -46,8 +46,14 @@ export default function Home({}: HomeProps): React.JSX.Element {
         const response = await productService.getProducts(1, 50);
         setProducts(response.data || []);
 
-        // Set new this week items (first 4 products)
-        setNewThisWeek((response.data || []).slice(0, 4));
+        // Set new this week items (first 4 products) with variant counts
+        const newThisWeekProducts = (response.data || [])
+          .slice(0, 4)
+          .map((product: Product, index: number) => ({
+            ...product,
+            variantCount: [16, 0, 13, 2][index] || 0, // Example variant counts for demo
+          }));
+        setNewThisWeek(newThisWeekProducts);
 
         // Fetch categories
         try {
@@ -108,6 +114,7 @@ export default function Home({}: HomeProps): React.JSX.Element {
           <NewThisWeekSection
             products={newThisWeek}
             addToCart={handleAddToCart}
+            totalCount={products.length}
           />
         )}
 

@@ -6,7 +6,6 @@
 import React from "react";
 import Link from "next/link";
 import ProductImage from "../atoms/ProductImage";
-import Button from "../atoms/Button";
 import Text from "../atoms/Text";
 import Price from "../atoms/Price";
 
@@ -14,9 +13,11 @@ export interface Product {
   id: string | number;
   name: string;
   image?: string;
+  images?: string[];
   price?: number;
-  category?: string;
+  category?: string | { id: string; name: string; slug?: string };
   description?: string;
+  variantCount?: number;
 }
 
 interface ProductCardProps {
@@ -30,35 +31,61 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   addToCart,
   cardSize = "default",
 }) => {
-  const textSize = cardSize === "large" ? "text-base" : "text-sm";
-
   return (
     <div className="cursor-pointer group">
-      <ProductImage
-        src={product.image}
-        alt={product.name}
-        productId={product.id}
-      />
-
-      <Link href={`/products/${product.id}`}>
-        <Text
-          variant={cardSize === "large" ? "subtitle" : "caption"}
-          className="mb-2 transition group-hover:text-gray-600"
+      {/* Product Image Container */}
+      <div className="relative mb-4">
+        <ProductImage
+          src={product.image || product.images?.[0]}
+          alt={product.name}
+          productId={product.id}
+        />
+        {/* Plus Button */}
+        <button
+          onClick={() => addToCart(product)}
+          className="absolute bottom-3 left-1/2 transform -translate-x-1/2 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition"
+          title="Add to cart"
         >
-          {product.name}
-        </Text>
-      </Link>
+          <span className="text-xl font-light">+</span>
+        </button>
+      </div>
 
-      <Price amount={product.price} className="mb-4" />
+      {/* Product Info */}
+      <div className="space-y-1">
+        {/* Category Label */}
+        {product.category && (
+          <Text
+            variant="caption"
+            color="muted"
+            className="text-xs uppercase tracking-wider"
+          >
+            {typeof product.category === "string"
+              ? product.category
+              : product.category.name}
+          </Text>
+        )}
 
-      <Button
-        onClick={() => addToCart(product)}
-        variant="primary"
-        size="md"
-        className="w-full"
-      >
-        Add to Cart
-      </Button>
+        {/* Product Name */}
+        <Link href={`/products/${product.id}`}>
+          <Text
+            variant={cardSize === "large" ? "subtitle" : "body"}
+            weight="bold"
+            className="mb-2 transition group-hover:text-gray-600 line-clamp-2"
+          >
+            {product.name}
+          </Text>
+        </Link>
+
+        {/* Price and Variants */}
+        <div className="flex items-center justify-between">
+          <Price amount={product.price} className="mb-0" />
+          {product.variantCount && product.variantCount > 0 && (
+            <Text variant="caption" color="muted" className="text-xs">
+              +{product.variantCount}
+            </Text>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

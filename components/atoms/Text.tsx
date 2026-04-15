@@ -25,8 +25,8 @@ export const Text: React.FC<TextProps> = ({
   truncate = false,
 }) => {
   const variantClasses = {
-    body: "text-base",
-    caption: "text-sm",
+    body: "text-sm",
+    caption: "text-xs",
     subtitle: "text-lg",
     overline: "text-xs uppercase tracking-wide",
   };
