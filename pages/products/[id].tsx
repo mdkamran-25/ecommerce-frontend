@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState, useContext, FC } from "react";
 import Head from "next/head";
 import NextLink from "next/link";
-import * as productService from "../../services/productService";
+import productService from "../../services/productService";
 import reviewService from "../../services/reviewService";
 import { CartContext } from "../../context/CartContext";
 import { AuthContext } from "../../context/AuthContext";
@@ -100,8 +100,8 @@ const ProductDetail: FC = () => {
       try {
         setLoading(true);
         setError("");
-        const { data } = await (productService as any).getProduct(id);
-        setProduct(data.data);
+        const response = await productService.getProduct(id);
+        setProduct(response.data);
 
         fetchReviews();
         fetchRatingStats();
