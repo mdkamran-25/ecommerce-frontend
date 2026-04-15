@@ -8,7 +8,6 @@ import { JSX } from "react";
 import { AuthProvider } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
 import Header from "../components/Header";
-import Footer from "../components/Footer";
 import { ToastContainer } from "react-toastify";
 import Script from "next/script";
 import "react-toastify/dist/ReactToastify.css";
@@ -44,7 +43,6 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
             <main className="w-full px-8 py-8 mx-auto grow">
               <Component {...pageProps} />
             </main>
-            <Footer />
           </div>
         </CartProvider>
       </AuthProvider>

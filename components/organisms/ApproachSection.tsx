@@ -4,63 +4,85 @@
  */
 
 import React from "react";
+import Image from "next/image";
 import SectionTitle from "../atoms/SectionTitle";
 import Text from "../atoms/Text";
-
-interface MoodBoardItem {
-  title: string;
-  color: string;
-}
 
 interface ApproachSectionProps {
   className?: string;
   description?: string;
 }
 
-const MOOD_BOARD_ITEMS: MoodBoardItem[] = [
-  { title: "Elegance", color: "bg-blue-100" },
-  { title: "Heritage", color: "bg-gray-200" },
-  { title: "Innovation", color: "bg-gray-100" },
-  { title: "Craftsmanship", color: "bg-yellow-50" },
-];
-
 const DEFAULT_DESCRIPTION =
-  "at elegant vogue, we blend creativity with craftsmanship to create fashion that transcends trends. each fashion that transcends trends. each piece is meticulously crafted, ensuring the highest quality design is meticulously crafted, ensuring the highest quality and exquisite finish.";
+  "at elegant vogue, we blend creativity with craftsmanship to create fashion that transcends trends and stands the test of time each design is meticulously crafted, ensuring the highest quality exquisite finish.";
 
 export const ApproachSection: React.FC<ApproachSectionProps> = ({
   className = "",
   description = DEFAULT_DESCRIPTION,
 }) => {
   return (
-    <section className={`px-6 py-20 md:px-12 bg-gray-50 ${className}`}>
-      <div className="max-w-6xl mx-auto">
+    <section className={`mt-24 mb-24 ${className}`}>
+      <div className="mx-auto max-w-7xl">
         {/* Section Title */}
-        <SectionTitle className="text-center mb-8">
+        <SectionTitle className="mb-6 text-6xl text-center text-black font-extralight">
           OUR APPROACH TO FASHION DESIGN
         </SectionTitle>
 
         {/* Description */}
-        <Text
-          variant="body"
-          className="max-w-2xl mx-auto mb-16 leading-relaxed text-center text-gray-700"
-        >
-          {description}
-        </Text>
+        <div className="flex justify-center ">
+          <p
+            className="max-w-2xl text-lg font-light leading-normal text-center text-gray-700 wrap-break-words"
+            style={{
+              fontFamily:
+                "'Beatrice Deck Trial', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+              fontWeight: 100,
+            }}
+          >
+            {description}
+          </p>
+        </div>
 
-        {/* Mood Board Grid */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-          {MOOD_BOARD_ITEMS.map((item) => (
-            <div
-              key={item.title}
-              className={`aspect-square rounded ${item.color} flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-80 transition`}
-            >
-              <div className="text-center">
-                <Text variant="subtitle" weight="semibold" color="default">
-                  {item.title}
-                </Text>
-              </div>
-            </div>
-          ))}
+        {/* Mood Board Gallery Grid */}
+        <div className="grid items-end grid-cols-12 gap-6 py-24 mx-auto max-w-7xl">
+          {/* Image 1 - Left Large */}
+          <div className="relative col-span-3 overflow-hidden border border-gray-300 rounded h-80">
+            <Image
+              src="/img/HomepageImage1.png"
+              alt="Elegance"
+              fill
+              className="object-cover transition duration-300 hover:scale-105"
+            />
+          </div>
+
+          {/* Image 2 - Center Medium */}
+          <div className="relative col-span-3 overflow-hidden border border-gray-300 rounded top-20 h-80">
+            <Image
+              src="/img/Homepageimage2.png"
+              alt="Heritage"
+              fill
+              className="object-cover transition duration-300 hover:scale-105"
+            />
+          </div>
+
+          {/* Image 3 - Right Medium */}
+          <div className="relative col-span-3 overflow-hidden border border-gray-300 rounded h-80">
+            <Image
+              src="/img/HomepageImage1.png"
+              alt="Innovation"
+              fill
+              className="object-cover transition duration-300 hover:scale-105"
+            />
+          </div>
+
+          {/* Image 4 - Far Right Large */}
+          <div className="relative col-span-3 overflow-hidden border border-gray-300 rounded top-20 h-80">
+            <Image
+              src="/img/Homepageimage2.png"
+              alt="Craftsmanship"
+              fill
+              className="object-cover transition duration-300 hover:scale-105"
+            />
+          </div>
         </div>
       </div>
     </section>

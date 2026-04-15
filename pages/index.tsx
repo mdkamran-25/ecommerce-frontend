@@ -5,7 +5,6 @@
 
 import React, { useEffect, useState, useContext } from "react";
 import Head from "next/head";
-import Link from "next/link";
 import { CartContext } from "../context/CartContext";
 import { productService } from "../services/productService";
 import { Product } from "../types";
@@ -14,7 +13,7 @@ import { Product } from "../types";
 import NewThisWeekSection from "../components/organisms/NewThisWeekSection";
 import CollectionsSection from "../components/organisms/CollectionsSection";
 import ApproachSection from "../components/organisms/ApproachSection";
-import CTASection from "../components/organisms/CTASection";
+import Footer from "../components/organisms/Footer";
 import Hero from "../components/Hero";
 
 interface HomeProps {}
@@ -127,124 +126,8 @@ export default function Home({}: HomeProps): React.JSX.Element {
         {/* OUR APPROACH TO FASHION DESIGN SECTION */}
         <ApproachSection />
 
-        {/* CTA SECTION */}
-        <CTASection />
-
         {/* FOOTER */}
-        <footer className="px-6 py-16 text-white bg-black md:px-12">
-          <div className="grid grid-cols-1 gap-12 mx-auto mb-12 max-w-7xl md:grid-cols-4">
-            {/* Brand */}
-            <div>
-              <h4 className="mb-4 text-2xl font-black">XIV</h4>
-              <p className="text-sm text-gray-400">
-                Modern fashion for modern lives
-              </p>
-            </div>
-
-            {/* Quick Links */}
-            <div>
-              <h5 className="mb-4 text-sm font-semibold">SHOP</h5>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>
-                  <Link
-                    href="/products"
-                    className="transition hover:text-white"
-                  >
-                    All Products
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/products"
-                    className="transition hover:text-white"
-                  >
-                    New Arrivals
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/products"
-                    className="transition hover:text-white"
-                  >
-                    Collections
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Customer Service */}
-            <div>
-              <h5 className="mb-4 text-sm font-semibold">CUSTOMER SERVICE</h5>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>
-                  <a href="#" className="transition hover:text-white">
-                    Contact Us
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="transition hover:text-white">
-                    Shipping Info
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="transition hover:text-white">
-                    Returns
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="transition hover:text-white">
-                    FAQ
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Company */}
-            <div>
-              <h5 className="mb-4 text-sm font-semibold">COMPANY</h5>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>
-                  <a href="#" className="transition hover:text-white">
-                    About Us
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="transition hover:text-white">
-                    Careers
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="transition hover:text-white">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="transition hover:text-white">
-                    Terms
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Footer Bottom */}
-          <div className="pt-8 border-t border-gray-800">
-            <div className="flex flex-col items-center justify-between text-sm text-gray-400 md:flex-row">
-              <p>&copy; 2026 XIV Fashion. All rights reserved.</p>
-              <div className="flex gap-6 mt-4 md:mt-0">
-                <a href="#" className="transition hover:text-white">
-                  Instagram
-                </a>
-                <a href="#" className="transition hover:text-white">
-                  Facebook
-                </a>
-                <a href="#" className="transition hover:text-white">
-                  Twitter
-                </a>
-              </div>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );
