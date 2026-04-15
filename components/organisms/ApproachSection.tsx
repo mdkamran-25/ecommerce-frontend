@@ -47,7 +47,7 @@ export const ApproachSection: React.FC<ApproachSectionProps> = ({
           {/* Image 1 - Left Large */}
           <div className="relative col-span-3 overflow-hidden border border-gray-300 rounded h-80">
             <Image
-              src="/img/HomepageImage1.png"
+              src="/img/Footerimg1.png"
               alt="Elegance"
               fill
               className="object-cover transition duration-300 hover:scale-105"
@@ -57,7 +57,7 @@ export const ApproachSection: React.FC<ApproachSectionProps> = ({
           {/* Image 2 - Center Medium */}
           <div className="relative col-span-3 overflow-hidden border border-gray-300 rounded top-20 h-80">
             <Image
-              src="/img/Homepageimage2.png"
+              src="/img/footerimg2.png"
               alt="Heritage"
               fill
               className="object-cover transition duration-300 hover:scale-105"
@@ -67,7 +67,7 @@ export const ApproachSection: React.FC<ApproachSectionProps> = ({
           {/* Image 3 - Right Medium */}
           <div className="relative col-span-3 overflow-hidden border border-gray-300 rounded h-80">
             <Image
-              src="/img/HomepageImage1.png"
+              src="/img/footerimg3.png"
               alt="Innovation"
               fill
               className="object-cover transition duration-300 hover:scale-105"
