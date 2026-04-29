@@ -24,7 +24,19 @@ export const NewThisWeekSection: React.FC<NewThisWeekSectionProps> = ({
   className = "",
 }) => {
   const [currentPosition, setCurrentPosition] = useState(0);
-  const itemsPerPage = 4;
+  const [itemsPerPage, setItemsPerPage] = useState(4);
+
+  // Handle responsive items per page
+  React.useEffect(() => {
+    const handleResize = () => {
+      setItemsPerPage(window.innerWidth < 768 ? 1 : 4);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const maxPosition = Math.max(0, products.length - itemsPerPage);
 
   // Reset position if products change
@@ -51,22 +63,22 @@ export const NewThisWeekSection: React.FC<NewThisWeekSectionProps> = ({
     <section className={` ${className}`}>
       <div className="mx-auto max-w-7xl">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-12">
+        <div className="flex flex-col gap-3 mb-8 md:mb-12 md:flex-row md:items-center md:justify-between">
           <Link href="/products" className="group">
-            <div className="flex items-center gap-3 cursor-pointer">
-              <SectionTitle className="text-5xl font-black leading-none transition group-hover:text-blue-600">
+            <div className="flex items-center gap-2 md:gap-3 cursor-pointer">
+              <SectionTitle className="text-2xl md:text-5xl font-black leading-none transition group-hover:text-blue-600">
                 NEW
                 <br />
                 THIS WEEK
               </SectionTitle>
-              <span className="ml-2 text-2xl font-bold text-blue-600">
+              <span className="ml-1 md:ml-2 text-xl md:text-2xl font-bold text-blue-600">
                 ({totalCount})
               </span>
             </div>
           </Link>
           <Link
             href="/products"
-            className="text-sm font-medium text-gray-600 transition hover:text-gray-800"
+            className="text-xs md:text-sm font-medium text-gray-600 transition hover:text-gray-800 whitespace-nowrap"
           >
             See All
           </Link>
@@ -80,21 +92,21 @@ export const NewThisWeekSection: React.FC<NewThisWeekSectionProps> = ({
         />
 
         {/* Pagination */}
-        <div className="flex items-center justify-center gap-3 mt-12">
+        <div className="flex items-center justify-center gap-2 md:gap-3 mt-8 md:mt-12">
           <button
             onClick={handlePrevious}
             disabled={currentPosition === 0}
-            className="flex items-center justify-center w-12 h-12 text-gray-800 transition border border-gray-400 hover:bg-gray-800 hover:text-white hover:border-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-gray-800 transition border border-gray-400 hover:bg-gray-800 hover:text-white hover:border-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <IoIosArrowBack className="w-5 h-5" />
+            <IoIosArrowBack className="w-4 h-4 md:w-5 md:h-5" />
           </button>
 
           <button
             onClick={handleNext}
             disabled={currentPosition >= maxPosition}
-            className="flex items-center justify-center w-12 h-12 text-gray-800 transition border border-gray-400 hover:bg-gray-800 hover:text-white hover:border-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-gray-800 transition border border-gray-400 hover:bg-gray-800 hover:text-white hover:border-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <IoIosArrowForward className="w-5 h-5" />
+            <IoIosArrowForward className="w-4 h-4 md:w-5 md:h-5" />
           </button>
         </div>
       </div>

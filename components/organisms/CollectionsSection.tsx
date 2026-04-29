@@ -59,10 +59,10 @@ export const CollectionsSection: React.FC<CollectionsSectionProps> = ({
     <section className={`mt-24 ${className}`}>
       <div className="mx-auto max-w-7xl">
         {/* Section Header */}
-        <div className="flex items-start justify-between mb-12">
+        <div className="flex flex-col gap-6 mb-8 md:mb-12 md:flex-row md:items-start md:justify-between">
           {/* Left Side - Title and Filters */}
-          <div>
-            <SectionTitle className="text-5xl font-black leading-none transition group-hover:text-blue-600">
+          <div className="flex-1">
+            <SectionTitle className="text-3xl md:text-5xl font-black leading-none transition group-hover:text-blue-600">
               XIV
               <br />
               COLLECTIONS
@@ -71,12 +71,12 @@ export const CollectionsSection: React.FC<CollectionsSectionProps> = ({
             </SectionTitle>
 
             {/* Category Filters */}
-            <div className="flex gap-6 mt-8">
+            <div className="flex gap-3 md:gap-6 mt-6 md:mt-8 overflow-x-auto pb-2">
               {FILTER_OPTIONS.map((filter) => (
                 <button
                   key={filter}
                   onClick={() => onCategoryChange(filter)}
-                  className={`text-sm font-medium transition ${
+                  className={`text-xs md:text-sm font-medium transition whitespace-nowrap ${
                     selectedCategory === filter
                       ? "text-black"
                       : "text-gray-400 hover:text-gray-600"
@@ -89,9 +89,9 @@ export const CollectionsSection: React.FC<CollectionsSectionProps> = ({
           </div>
 
           {/* Right Side - Filters and Sorts */}
-          <div className="flex flex-col items-end gap-6">
+          <div className="flex gap-4 md:flex-col md:items-end md:gap-6">
             {/* Filters Button */}
-            <button className="flex items-center gap-2 text-sm font-medium text-gray-800 transition hover:text-black">
+            <button className="flex items-center gap-2 text-xs md:text-sm font-medium text-gray-800 transition hover:text-black whitespace-nowrap">
               Filters(+)
             </button>
 
@@ -99,11 +99,11 @@ export const CollectionsSection: React.FC<CollectionsSectionProps> = ({
             <div className="relative">
               <button
                 onClick={() => setShowSortMenu(!showSortMenu)}
-                className="flex items-center gap-2 text-sm font-medium text-gray-800 transition hover:text-black"
+                className="flex items-center gap-2 text-xs md:text-sm font-medium text-gray-800 transition hover:text-black whitespace-nowrap"
               >
                 Sorts(+)
                 <IoIosArrowDown
-                  className={`w-4 h-4 transition ${
+                  className={`w-3 h-3 md:w-4 md:h-4 transition ${
                     showSortMenu ? "rotate-180" : ""
                   }`}
                 />
@@ -111,13 +111,13 @@ export const CollectionsSection: React.FC<CollectionsSectionProps> = ({
 
               {/* Sort Dropdown Menu */}
               {showSortMenu && (
-                <div className="absolute right-0 z-10 mt-2 bg-white border border-gray-300 rounded shadow-lg top-full">
+                <div className="absolute right-0 z-10 mt-2 bg-white border border-gray-300 rounded shadow-lg top-full min-w-max">
                   <button
                     onClick={() => {
                       setSortBy("default");
                       setShowSortMenu(false);
                     }}
-                    className={`block w-full text-right px-4 py-2 text-sm transition ${
+                    className={`block w-full text-right px-3 md:px-4 py-2 text-xs md:text-sm transition ${
                       sortBy === "default"
                         ? "text-black font-semibold"
                         : "text-gray-600 hover:text-black"
@@ -130,7 +130,7 @@ export const CollectionsSection: React.FC<CollectionsSectionProps> = ({
                       setSortBy("low-to-high");
                       setShowSortMenu(false);
                     }}
-                    className={`block w-full text-right px-4 py-2 text-sm transition ${
+                    className={`block w-full text-right px-3 md:px-4 py-2 text-xs md:text-sm transition ${
                       sortBy === "low-to-high"
                         ? "text-black font-semibold"
                         : "text-gray-600 hover:text-black"
@@ -143,7 +143,7 @@ export const CollectionsSection: React.FC<CollectionsSectionProps> = ({
                       setSortBy("high-to-low");
                       setShowSortMenu(false);
                     }}
-                    className={`block w-full text-right px-4 py-2 text-sm transition ${
+                    className={`block w-full text-right px-3 md:px-4 py-2 text-xs md:text-sm transition ${
                       sortBy === "high-to-low"
                         ? "text-black font-semibold"
                         : "text-gray-600 hover:text-black"

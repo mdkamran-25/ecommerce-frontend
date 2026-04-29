@@ -67,7 +67,7 @@ const Header: React.FC = () => {
       {/* Header Navigation */}
       <header className="sticky top-0 z-40 ">
         <nav
-          className="flex items-center justify-between max-w-full px-6 py-4"
+          className="relative flex items-center justify-between max-w-full px-6 py-4"
           style={{
             fontFamily:
               "'Beatrice Deck Trial', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
@@ -127,47 +127,48 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          {/* Center: Divider with Design Element */}
-          <div className="items-center justify-center flex-1 hidden mx-6 md:flex">
-            <div className="flex items-center gap-3">
-              {/* Brand Logo */}
-              <Link href="/" className="hidden md:block shrink-0">
-                <img
-                  src="/icons/brandlogo.svg"
-                  alt="Brand Logo"
-                  className="h-8"
-                />
-              </Link>
-            </div>
+          {/* Center: Brand Logo - Centered on Mobile */}
+          <div className="absolute transform -translate-x-1/2 left-1/2 md:absolute md:left-1/2 md:-translate-x-1/2">
+            <Link href="/" className="shrink-0">
+              <img
+                src="/icons/brandlogo.svg"
+                alt="Brand Logo"
+                className="h-8"
+              />
+            </Link>
           </div>
 
           {/* Right Section: Icons */}
-          <div className="flex items-center gap-8 ">
-            {/* Wishlist Icon */}
-
+          <div className="flex items-center gap-4 md:gap-8">
+            {/* Wishlist Icon - Hidden on Mobile, Shown on Desktop */}
             <button
-              className="p-2.5 text-white transition bg-black rounded-full hover:bg-gray-800"
+              className="hidden p-2.5 text-white transition bg-black rounded-full hover:bg-gray-800 md:block"
               title="Wishlist"
             >
               <CiHeart className="w-6 h-6" />
             </button>
 
             {/* Cart Icon with Badge */}
-            <div className="flex items-center gap-0">
+            <div className="flex items-center gap-0 md:gap-0">
+              {/* Cart Text - Hidden on Mobile, Shown on Desktop */}
               <span
-                className="px-4 py-2.5 text-white bg-black rounded-full"
+                className="hidden px-4 py-2.5 text-white bg-black rounded-full md:inline-block"
                 style={{ marginRight: "-4px", zIndex: 10 }}
               >
                 Cart
               </span>
+              {/* Cart Button - Different Styling for Mobile vs Desktop */}
               <Link
                 href="/cart"
-                className="relative p-2 text-gray-800 transition bg-white border-4 border-black rounded-full hover:bg-gray-100"
+                className="relative p-2 text-black transition border-4 border-black rounded-full hover:bg-gray-100 md:p-2 md:bg-white md:border-4 md:border-black md:text-gray-800 md:hover:bg-gray-100"
                 title="Shopping Cart"
               >
-                <HiOutlineShoppingCart className="w-5 h-5" />
+                <HiOutlineShoppingCart
+                  className="w-4 h-4 md:w-5 md:h-5"
+                  style={{ strokeWidth: 2 }}
+                />
                 {cart?.items?.length > 0 && (
-                  <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-gray-800 rounded-full">
+                  <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-gray-800 rounded-full md:bg-gray-800">
                     {cart.items.length}
                   </span>
                 )}
@@ -181,7 +182,7 @@ const Header: React.FC = () => {
                 className="p-3 text-white transition bg-black rounded-full hover:bg-gray-900"
                 title="Account"
               >
-                <AiOutlineUser className="w-5 h-5" />
+                <AiOutlineUser className="w-4 h-4 md:w-5 md:h-5" />
               </button>
 
               {/* User Dropdown Menu */}

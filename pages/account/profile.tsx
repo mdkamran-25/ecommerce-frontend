@@ -231,7 +231,7 @@ function ProfilePageContent(): JSX.Element {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-3 pt-6 border-t border-gray-200">
+              <div className="flex flex-col gap-3 pt-6 border-t border-gray-200 sm:flex-row">
                 {!editMode ? (
                   <>
                     <button
@@ -243,9 +243,15 @@ function ProfilePageContent(): JSX.Element {
                     </button>
                     <Link
                       href="/account/change-password"
-                      className="px-4 py-2 mr-auto text-sm font-bold text-gray-700 transition bg-gray-200 rounded hover:bg-gray-300"
+                      className="px-4 py-2 text-sm font-bold text-gray-700 transition bg-gray-200 rounded hover:bg-gray-300"
                     >
                       Change Password
+                    </Link>
+                    <Link
+                      href="/wishlist"
+                      className="px-4 py-2 text-sm font-bold text-white transition bg-black rounded hover:bg-gray-800"
+                    >
+                      My Wishlist
                     </Link>
                   </>
                 ) : (

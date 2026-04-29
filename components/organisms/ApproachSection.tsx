@@ -24,14 +24,14 @@ export const ApproachSection: React.FC<ApproachSectionProps> = ({
     <section className={`mt-24 mb-24 ${className}`}>
       <div className="mx-auto max-w-7xl">
         {/* Section Title */}
-        <SectionTitle className="mb-6 text-6xl text-center text-black font-extralight">
+        <SectionTitle className="mb-4 md:mb-6 text-2xl md:text-6xl text-center text-black font-extralight">
           OUR APPROACH TO FASHION DESIGN
         </SectionTitle>
 
         {/* Description */}
-        <div className="flex justify-center ">
+        <div className="flex justify-center">
           <p
-            className="max-w-2xl text-lg font-light leading-normal text-center text-gray-700 wrap-break-words"
+            className="max-w-2xl text-sm md:text-lg font-light leading-normal text-center text-gray-700 wrap-break-words px-4"
             style={{
               fontFamily:
                 "'Beatrice Deck Trial', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
@@ -43,9 +43,9 @@ export const ApproachSection: React.FC<ApproachSectionProps> = ({
         </div>
 
         {/* Mood Board Gallery Grid */}
-        <div className="grid items-end grid-cols-12 gap-6 py-24 mx-auto max-w-7xl">
+        <div className="grid items-end grid-cols-1 md:grid-cols-12 gap-3 md:gap-6 py-12 md:py-24 mx-auto max-w-7xl">
           {/* Image 1 - Left Large */}
-          <div className="relative col-span-3 overflow-hidden border border-gray-300 rounded h-80">
+          <div className="relative col-span-1 md:col-span-3 overflow-hidden border border-gray-300 rounded h-48 md:h-80">
             <Image
               src="/img/Footerimg1.png"
               alt="Elegance"
@@ -55,7 +55,7 @@ export const ApproachSection: React.FC<ApproachSectionProps> = ({
           </div>
 
           {/* Image 2 - Center Medium */}
-          <div className="relative col-span-3 overflow-hidden border border-gray-300 rounded top-20 h-80">
+          <div className="relative col-span-1 md:col-span-3 overflow-hidden border border-gray-300 rounded md:top-20 h-48 md:h-80">
             <Image
               src="/img/footerimg2.png"
               alt="Heritage"
@@ -65,7 +65,7 @@ export const ApproachSection: React.FC<ApproachSectionProps> = ({
           </div>
 
           {/* Image 3 - Right Medium */}
-          <div className="relative col-span-3 overflow-hidden border border-gray-300 rounded h-80">
+          <div className="relative col-span-1 md:col-span-3 overflow-hidden border border-gray-300 rounded h-48 md:h-80">
             <Image
               src="/img/footerimg3.png"
               alt="Innovation"
@@ -75,7 +75,7 @@ export const ApproachSection: React.FC<ApproachSectionProps> = ({
           </div>
 
           {/* Image 4 - Far Right Large */}
-          <div className="relative col-span-3 overflow-hidden border border-gray-300 rounded top-20 h-80">
+          <div className="relative col-span-1 md:col-span-3 overflow-hidden border border-gray-300 rounded md:top-20 h-48 md:h-80">
             <Image
               src="/img/Homepageimage2.png"
               alt="Craftsmanship"

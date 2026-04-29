@@ -5,6 +5,7 @@ import Link from "next/link";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../context/AuthContext";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 /**
  * SignupPage
@@ -54,6 +55,10 @@ const SignupPage = (): JSX.Element => {
   const [error, setError] = useState<string>("");
   const [signupSuccess, setSignupSuccess] = useState<boolean>(false);
   const [signupEmail, setSignupEmail] = useState<string>("");
+
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
 
   /**
    * Auth guard: Redirect logged-in users away from signup
@@ -345,24 +350,36 @@ const SignupPage = (): JSX.Element => {
             >
               Password
             </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Min 8 chars: uppercase, lowercase, number, special char (@$!%*?&)"
-              required
-              className="w-full input-field"
-            />
-
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Min 8 chars: uppercase, lowercase, number, special char (@$!%*?&)"
+                required
+                className="w-full pr-10 input-field"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute text-gray-500 transform -translate-y-1/2 right-3 top-1/2 hover:text-gray-700"
+              >
+                {showPassword ? (
+                  <AiOutlineEyeInvisible size={20} />
+                ) : (
+                  <AiOutlineEye size={20} />
+                )}
+              </button>
+            </div>
             {password && (
               <div className="mt-3">
-                <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-600">
                     Password Strength:
                   </span>
                   <span
-                    className="text-xs font-bold px-2 py-1 rounded"
+                    className="px-2 py-1 text-xs font-bold rounded"
                     style={{
                       backgroundColor: strengthInfo.color,
                       color: "white",
@@ -399,20 +416,33 @@ const SignupPage = (): JSX.Element => {
             >
               Confirm Password
             </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Re-enter your password"
-              required
-              className="w-full input-field"
-            />
+            <div className="relative">
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Re-enter your password"
+                required
+                className="w-full pr-10 input-field"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute text-gray-500 transform -translate-y-1/2 right-3 top-1/2 hover:text-gray-700"
+              >
+                {showConfirmPassword ? (
+                  <AiOutlineEyeInvisible size={20} />
+                ) : (
+                  <AiOutlineEye size={20} />
+                )}
+              </button>
+            </div>
             {password && confirmPassword && password === confirmPassword && (
-              <p className="text-xs text-green-600 mt-1">✓ Passwords match</p>
+              <p className="mt-1 text-xs text-green-600">✓ Passwords match</p>
             )}
             {password && confirmPassword && password !== confirmPassword && (
-              <p className="text-xs text-red-600 mt-1">
+              <p className="mt-1 text-xs text-red-600">
                 ✗ Passwords do not match
               </p>
             )}
@@ -421,7 +451,7 @@ const SignupPage = (): JSX.Element => {
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary w-full mb-4"
+            className="w-full mb-4 btn-primary"
           >
             {loading ? "Creating Account..." : "Sign Up"}
           </button>
@@ -430,13 +460,13 @@ const SignupPage = (): JSX.Element => {
             Already have an account?{" "}
             <Link
               href="/auth/login"
-              className="text-blue-600 font-bold hover:underline"
+              className="font-bold text-blue-600 hover:underline"
             >
               Log in here
             </Link>
           </p>
 
-          <p className="text-center mt-4">
+          <p className="mt-4 text-center">
             <Link href="/" className="text-gray-500 hover:text-gray-700">
               Back to home
             </Link>
