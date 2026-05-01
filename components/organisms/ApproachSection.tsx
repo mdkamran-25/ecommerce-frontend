@@ -33,8 +33,6 @@ export const ApproachSection: React.FC<ApproachSectionProps> = ({
           <p
             className="max-w-2xl text-sm md:text-lg font-light leading-normal text-center text-gray-700 wrap-break-words px-4"
             style={{
-              fontFamily:
-                "'Beatrice Deck Trial', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
               fontWeight: 100,
             }}
           >

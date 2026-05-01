@@ -60,12 +60,12 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
 
       {product.compareAt && (
         <p className="mb-1 text-sm text-gray-500 line-through">
-          ₹{product.compareAt}
+          ${product.compareAt}
         </p>
       )}
 
       <p className="mb-2 text-2xl font-bold text-green-600">
-        ₹{product.price || 0}
+        ${product.price || 0}
       </p>
 
       <p className="mb-3 text-sm text-gray-600">

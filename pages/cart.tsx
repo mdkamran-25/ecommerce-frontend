@@ -268,7 +268,7 @@ function CartPageContent(_props: CartPageContentProps): JSX.Element {
                   </Link>
                 </h3>
                 <p style={{ color: "#666", marginBottom: "0.5rem" }}>
-                  Price: ₹{item.product.price}
+                  Price: ${item.product.price}
                 </p>
 
                 <div
@@ -296,7 +296,7 @@ function CartPageContent(_props: CartPageContentProps): JSX.Element {
                 </div>
 
                 <p style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-                  Subtotal: ₹{(item.quantity * item.product.price).toFixed(2)}
+                  Subtotal: ${(item.quantity * item.product.price).toFixed(2)}
                 </p>
               </div>
 
@@ -364,7 +364,7 @@ function CartPageContent(_props: CartPageContentProps): JSX.Element {
                   <strong>Applied Coupon:</strong> {appliedCoupon}
                 </p>
                 <p style={{ marginBottom: "1rem", color: "#666" }}>
-                  <strong>Discount:</strong> ₹{cartPricing.discountAmount}
+                  <strong>Discount:</strong> ${cartPricing.discountAmount}
                 </p>
                 <button
                   onClick={handleRemoveCoupon}
@@ -430,7 +430,7 @@ function CartPageContent(_props: CartPageContentProps): JSX.Element {
               }}
             >
               <span>Subtotal:</span>
-              <span>₹{cartPricing.subtotal.toFixed(2)}</span>
+              <span>${cartPricing.subtotal.toFixed(2)}</span>
             </div>
 
             {cartPricing.discountAmount > 0 && (
@@ -443,7 +443,7 @@ function CartPageContent(_props: CartPageContentProps): JSX.Element {
                 }}
               >
                 <span>Discount:</span>
-                <span>-₹{cartPricing.discountAmount.toFixed(2)}</span>
+                <span>-${cartPricing.discountAmount.toFixed(2)}</span>
               </div>
             )}
 
@@ -455,12 +455,12 @@ function CartPageContent(_props: CartPageContentProps): JSX.Element {
               }}
             >
               <span>Shipping:</span>
-              <span>₹{cartPricing.shipping.toFixed(2)}</span>
+              <span>${cartPricing.shipping.toFixed(2)}</span>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span>Tax (18%):</span>
-              <span>₹{cartPricing.tax.toFixed(2)}</span>
+              <span>${cartPricing.tax.toFixed(2)}</span>
             </div>
           </div>
 
@@ -474,7 +474,7 @@ function CartPageContent(_props: CartPageContentProps): JSX.Element {
             }}
           >
             <span>Total:</span>
-            <span>₹{cartPricing.totalPrice.toFixed(2)}</span>
+            <span>${cartPricing.totalPrice.toFixed(2)}</span>
           </div>
 
           <Link href="/checkout">

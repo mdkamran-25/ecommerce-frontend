@@ -1,14 +1,34 @@
-import { useEffect, useState, JSX } from "react";
+import { useEffect, useState, JSX, useContext } from "react";
 import Head from "next/head";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import {
+  FiSearch,
+  FiChevronRight,
+  FiFilter,
+  FiChevronDown,
+} from "react-icons/fi";
+import { IoIosArrowBack } from "react-icons/io";
 import { productService } from "../services/productService";
-import ProductCard from "../components/ProductCard";
+import ProductCard from "../components/molecules/ProductCard";
 import { Product, Category } from "../types";
+import { CartContext } from "../context/CartContext";
 
 /**
- * ProductsPage
- * Displays all products with filtering by category and search functionality
- * Includes pagination support
+ * ProductsPage - Enhanced with Comprehensive Filters
  */
+
+interface FiltersData {
+  sizes: Array<{ value: string; count: number }>;
+  colors: Array<{ value: string; count: number }>;
+  priceRange: { min: number; max: number };
+  availability: {
+    inStock: { label: string; count: number };
+    outOfStock: { label: string; count: number };
+  };
+  categories: Array<{ name: string; slug: string; count: number }>;
+  ratings: Array<{ rating: number; count: number }>;
+}
 
 interface ProductsResponse {
   data: Product[];
@@ -19,51 +39,214 @@ interface ProductsResponse {
   };
 }
 
-interface CategoriesResponse {
-  data: Category[];
-}
-
 const ProductsPage = (): JSX.Element => {
+  const router = useRouter();
+  const { addToCart } = useContext(CartContext) as any;
+
+  // State
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [showFiltersSidebar, setShowFiltersSidebar] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
 
+  // Collapsible filter sections
+  const [expandedSections, setExpandedSections] = useState<
+    Record<string, boolean>
+  >({
+    size: true,
+    availability: true,
+    category: false,
+    colors: false,
+    priceRange: false,
+    ratings: false,
+  });
+
+  // Filters state
+  const [filtersData, setFiltersData] = useState<FiltersData | null>(null);
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedRating, setSelectedRating] = useState<number | null>(null);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [availability, setAvailability] = useState<string>("all"); // all, inStock, outOfStock
+
+  const toggleSection = (section: string) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
+  // Fetch filters on mount
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchFilters = async () => {
+      try {
+        const response = await productService.getFilters?.();
+        console.log("Raw filters response:", response); // Debug log
+
+        // Check if response has valid data
+        if (response?.success === true && response?.data) {
+          console.log("Using API filters data:", response.data);
+
+          // Ensure sizes array exists and has items
+          const sizesData =
+            response.data.sizes && response.data.sizes.length > 0
+              ? response.data.sizes
+              : [
+                  { value: "XS", count: 5 },
+                  { value: "S", count: 12 },
+                  { value: "M", count: 28 },
+                  { value: "L", count: 22 },
+                  { value: "XL", count: 15 },
+                  { value: "XXL", count: 8 },
+                ];
+
+          setFiltersData({
+            sizes: sizesData,
+            colors: response.data.colors || [
+              { value: "Black", count: 30 },
+              { value: "White", count: 25 },
+              { value: "Red", count: 15 },
+              { value: "Blue", count: 20 },
+              { value: "Green", count: 10 },
+            ],
+            priceRange: response.data.priceRange || { min: 10, max: 500 },
+            availability: response.data.availability || {
+              inStock: { label: "In Stock", count: 80 },
+              outOfStock: { label: "Out of Stock", count: 20 },
+            },
+            categories: response.data.categories || [
+              { name: "T-Shirt", slug: "t-shirt", count: 45 },
+              { name: "Jeans", slug: "jeans", count: 30 },
+              { name: "Shoes", slug: "shoes", count: 25 },
+            ],
+            ratings: response.data.ratings || [
+              { rating: 5, count: 50 },
+              { rating: 4, count: 30 },
+              { rating: 3, count: 15 },
+              { rating: 2, count: 3 },
+              { rating: 1, count: 2 },
+            ],
+          });
+
+          if (response.data.priceRange) {
+            setPriceRange([
+              response.data.priceRange.min,
+              response.data.priceRange.max,
+            ]);
+          } else {
+            setPriceRange([10, 500]);
+          }
+        } else {
+          // API returned error or invalid data, use full fallback
+          console.warn("Filter API invalid, using complete fallback data");
+          setFiltersData({
+            sizes: [
+              { value: "XS", count: 5 },
+              { value: "S", count: 12 },
+              { value: "M", count: 28 },
+              { value: "L", count: 22 },
+              { value: "XL", count: 15 },
+              { value: "XXL", count: 8 },
+            ],
+            colors: [
+              { value: "Black", count: 30 },
+              { value: "White", count: 25 },
+              { value: "Red", count: 15 },
+              { value: "Blue", count: 20 },
+              { value: "Green", count: 10 },
+            ],
+            priceRange: { min: 10, max: 500 },
+            availability: {
+              inStock: { label: "In Stock", count: 80 },
+              outOfStock: { label: "Out of Stock", count: 20 },
+            },
+            categories: [
+              { name: "T-Shirt", slug: "t-shirt", count: 45 },
+              { name: "Jeans", slug: "jeans", count: 30 },
+              { name: "Shoes", slug: "shoes", count: 25 },
+            ],
+            ratings: [
+              { rating: 5, count: 50 },
+              { rating: 4, count: 30 },
+              { rating: 3, count: 15 },
+              { rating: 2, count: 3 },
+              { rating: 1, count: 2 },
+            ],
+          });
+          setPriceRange([10, 500]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch filters:", error);
+        // Use complete fallback data on error
+        setFiltersData({
+          sizes: [
+            { value: "XS", count: 5 },
+            { value: "S", count: 12 },
+            { value: "M", count: 28 },
+            { value: "L", count: 22 },
+            { value: "XL", count: 15 },
+            { value: "XXL", count: 8 },
+          ],
+          colors: [
+            { value: "Black", count: 30 },
+            { value: "White", count: 25 },
+            { value: "Red", count: 15 },
+            { value: "Blue", count: 20 },
+            { value: "Green", count: 10 },
+          ],
+          priceRange: { min: 10, max: 500 },
+          availability: {
+            inStock: { label: "In Stock", count: 80 },
+            outOfStock: { label: "Out of Stock", count: 20 },
+          },
+          categories: [
+            { name: "T-Shirt", slug: "t-shirt", count: 45 },
+            { name: "Jeans", slug: "jeans", count: 30 },
+            { name: "Shoes", slug: "shoes", count: 25 },
+          ],
+          ratings: [
+            { rating: 5, count: 50 },
+            { rating: 4, count: 30 },
+            { rating: 3, count: 15 },
+            { rating: 2, count: 3 },
+            { rating: 1, count: 2 },
+          ],
+        });
+        setPriceRange([10, 500]);
+      }
+    };
+    fetchFilters();
+  }, []);
+
+  // Fetch products with filters
+  useEffect(() => {
+    const fetchProducts = async () => {
       try {
         setLoading(true);
 
-        // Fetch categories
-        try {
-          const categoriesResponse = await productService.getCategories();
-          if (categoriesResponse?.data) {
-            setCategories(
-              Array.isArray(categoriesResponse.data)
-                ? categoriesResponse.data
-                : [],
-            );
-          }
-        } catch (error) {
-          console.log("Categories not available");
-          setCategories([]);
+        const params: any = {
+          page,
+          limit: 12,
+        };
+
+        if (searchQuery) params.search = searchQuery;
+        if (selectedSizes.length > 0) params.sizes = selectedSizes;
+        if (selectedColors.length > 0) params.colors = selectedColors;
+        if (selectedCategory) params.category = selectedCategory;
+        if (priceRange) {
+          params.priceMin = priceRange[0];
+          params.priceMax = priceRange[1];
         }
+        if (availability === "inStock") params.inStock = "true";
+        else if (availability === "outOfStock") params.inStock = "false";
+        if (selectedRating) params.minRating = selectedRating;
 
-        // Fetch products
-        const productsResponse = await productService.getProducts(page, 12, {
-          category: selectedCategory || undefined,
-          search: searchQuery || undefined,
-        });
-
-        setProducts(
-          Array.isArray(productsResponse?.data) ? productsResponse.data : [],
-        );
-        setTotalPages(
-          Math.ceil((productsResponse?.pagination?.total || 0) / 12) || 1,
-        );
+        const response = await productService.getProducts(page, 12, params);
+        setProducts(Array.isArray(response?.data) ? response.data : []);
+        setTotalPages(Math.ceil((response?.pagination?.total || 0) / 12) || 1);
       } catch (error) {
         console.error("Failed to fetch products:", error);
       } finally {
@@ -71,25 +254,40 @@ const ProductsPage = (): JSX.Element => {
       }
     };
 
-    fetchData();
-  }, [selectedCategory, searchQuery, page]);
+    fetchProducts();
+  }, [
+    page,
+    searchQuery,
+    selectedSizes,
+    selectedColors,
+    selectedCategory,
+    priceRange,
+    availability,
+    selectedRating,
+  ]);
 
-  /**
-   * Handle next page pagination
-   */
-  const handleNextPage = (): void => {
-    if (page < totalPages) {
-      setPage(page + 1);
-    }
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPage(1);
   };
 
-  /**
-   * Handle previous page pagination
-   */
+  const handleNextPage = (): void => {
+    if (page < totalPages) setPage(page + 1);
+  };
+
   const handlePrevPage = (): void => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
+    if (page > 1) setPage(page - 1);
+  };
+
+  const toggleFilter = (
+    items: string[],
+    item: string,
+    setItems: (items: string[]) => void,
+  ) => {
+    setItems(
+      items.includes(item) ? items.filter((i) => i !== item) : [...items, item],
+    );
+    setPage(1); // Reset to first page when filter changes
   };
 
   return (
@@ -99,116 +297,720 @@ const ProductsPage = (): JSX.Element => {
         <meta name="description" content="Browse our product catalog" />
       </Head>
 
-      <div style={{ marginBottom: "2rem" }}>
-        <h1 style={{ marginBottom: "1rem" }}>All Products</h1>
+      <div className="flex min-h-screen">
+        {/* Desktop Filters Sidebar */}
+        <aside className="hidden border-r border-gray-200 w-80 md:block">
+          <div className="sticky top-0 h-screen p-6 overflow-y-auto ">
+            <h2 className="mb-6 text-lg font-bold">Filters</h2>
 
-        <div
-          style={{
-            display: "flex",
-            gap: "1rem",
-            marginBottom: "1rem",
-            flexWrap: "wrap",
-          }}
-        >
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setPage(1);
-            }}
-            style={{ flex: 1, minWidth: "250px" }}
-          />
-
-          <select
-            value={selectedCategory}
-            onChange={(e) => {
-              setSelectedCategory(e.target.value);
-              setPage(1);
-            }}
-          >
-            <option value="">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.slug}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="loading">Loading products...</div>
-      ) : !products || products.length === 0 ? (
-        <div
-          style={{
-            backgroundColor: "#f9f9f9",
-            padding: "2rem",
-            borderRadius: "8px",
-            textAlign: "center",
-            color: "#666",
-          }}
-        >
-          <p>No products found. Try adjusting your search or filters.</p>
-        </div>
-      ) : (
-        <>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-              gap: "1.5rem",
-              marginBottom: "2rem",
-            }}
-          >
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-
-          {/* Pagination */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: "1rem",
-              marginTop: "2rem",
-            }}
-          >
-            <button
-              onClick={handlePrevPage}
-              disabled={page === 1}
-              style={{ backgroundColor: page === 1 ? "#ccc" : "#007bff" }}
-            >
-              ← Previous
-            </button>
-
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                padding: "0.5rem 1rem",
-              }}
-            >
-              <span>
-                Page {page} of {totalPages}
-              </span>
+            {/* Size Filter - Always Expanded */}
+            <div className="pb-6 mb-6 border-b border-gray-200">
+              <h3 className="mb-4 text-sm font-semibold">Size</h3>
+              <div className="flex flex-wrap gap-2">
+                {(filtersData?.sizes && filtersData.sizes.length > 0
+                  ? filtersData.sizes
+                  : [
+                      { value: "XS", count: 5 },
+                      { value: "S", count: 12 },
+                      { value: "M", count: 28 },
+                      { value: "L", count: 22 },
+                      { value: "XL", count: 15 },
+                      { value: "XXL", count: 8 },
+                    ]
+                ).map((size) => (
+                  <button
+                    key={size.value}
+                    onClick={() =>
+                      toggleFilter(selectedSizes, size.value, setSelectedSizes)
+                    }
+                    className={`rounded border py-2 px-3 text-xs font-medium transition ${
+                      selectedSizes.includes(size.value)
+                        ? "border-black bg-black text-white"
+                        : "border-gray-300 text-gray-800 hover:border-black"
+                    }`}
+                    title={`${size.count} items`}
+                  >
+                    {size.value}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <button
-              onClick={handleNextPage}
-              disabled={page === totalPages}
-              style={{
-                backgroundColor: page === totalPages ? "#ccc" : "#007bff",
-              }}
-            >
-              Next →
-            </button>
+            {/* Availability Filter - Collapsible */}
+            <div className="pb-6 mb-6 border-b border-gray-200">
+              <button
+                onClick={() => toggleSection("availability")}
+                className="flex items-center justify-between w-full mb-4"
+              >
+                <h3 className="text-sm font-semibold">Availability</h3>
+                <FiChevronDown
+                  className={`transition transform ${
+                    expandedSections.availability ? "rotate-0" : "-rotate-90"
+                  }`}
+                />
+              </button>
+              {expandedSections.availability && (
+                <div className="space-y-3">
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="availability"
+                      checked={availability === "all"}
+                      onChange={() => {
+                        setAvailability("all");
+                        setPage(1);
+                      }}
+                      className="rounded"
+                    />
+                    <span className="ml-3 text-sm text-gray-700">
+                      All Items{" "}
+                      <span className="font-medium text-blue-600">
+                        ({filtersData?.availability.inStock.count || 0})
+                      </span>
+                    </span>
+                  </label>
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="availability"
+                      checked={availability === "inStock"}
+                      onChange={() => {
+                        setAvailability("inStock");
+                        setPage(1);
+                      }}
+                      className="rounded"
+                    />
+                    <span className="ml-3 text-sm text-gray-700">
+                      In Stock{" "}
+                      <span className="font-medium text-blue-600">
+                        ({filtersData?.availability.inStock.count || 0})
+                      </span>
+                    </span>
+                  </label>
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="availability"
+                      checked={availability === "outOfStock"}
+                      onChange={() => {
+                        setAvailability("outOfStock");
+                        setPage(1);
+                      }}
+                      className="rounded"
+                    />
+                    <span className="ml-3 text-sm text-gray-700">
+                      Out of Stock{" "}
+                      <span className="font-medium text-blue-600">
+                        ({filtersData?.availability.outOfStock.count || 0})
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              )}
+            </div>
+
+            {/* Categories Filter - Collapsible */}
+            <div className="pb-6 mb-6 border-b border-gray-200">
+              <button
+                onClick={() => toggleSection("category")}
+                className="flex items-center justify-between w-full mb-4"
+              >
+                <h3 className="text-sm font-semibold">Category</h3>
+                <FiChevronDown
+                  className={`transition transform ${
+                    expandedSections.category ? "rotate-0" : "-rotate-90"
+                  }`}
+                />
+              </button>
+              {expandedSections.category && (
+                <div className="space-y-2">
+                  {filtersData?.categories.map((cat) => (
+                    <button
+                      key={cat.slug}
+                      onClick={() => {
+                        setSelectedCategory(
+                          selectedCategory === cat.slug ? "" : cat.slug,
+                        );
+                        setPage(1);
+                      }}
+                      className={`w-full text-left text-sm py-2 px-3 rounded transition ${
+                        selectedCategory === cat.slug
+                          ? "bg-black text-white font-medium"
+                          : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                    >
+                      <span className="flex items-center justify-between">
+                        <span>{cat.name}</span>
+                        <span className="text-xs opacity-70">
+                          ({cat.count})
+                        </span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Colors Filter - Collapsible */}
+            <div className="pb-6 mb-6 border-b border-gray-200">
+              <button
+                onClick={() => toggleSection("colors")}
+                className="flex items-center justify-between w-full mb-4"
+              >
+                <h3 className="text-sm font-semibold">Colors</h3>
+                <FiChevronDown
+                  className={`transition transform ${
+                    expandedSections.colors ? "rotate-0" : "-rotate-90"
+                  }`}
+                />
+              </button>
+              {expandedSections.colors && (
+                <div className="space-y-2">
+                  {filtersData?.colors.map((color) => (
+                    <label
+                      key={color.value}
+                      className="flex items-center cursor-pointer group"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedColors.includes(color.value)}
+                        onChange={() =>
+                          toggleFilter(
+                            selectedColors,
+                            color.value,
+                            setSelectedColors,
+                          )
+                        }
+                        className="rounded cursor-pointer"
+                      />
+                      <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
+                        {color.value}{" "}
+                        <span className="font-medium text-blue-600">
+                          ({color.count})
+                        </span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Price Range Filter - Collapsible */}
+            <div className="pb-6 mb-6 border-b border-gray-200">
+              <button
+                onClick={() => toggleSection("priceRange")}
+                className="flex items-center justify-between w-full mb-4"
+              >
+                <h3 className="text-sm font-semibold">Price Range</h3>
+                <FiChevronDown
+                  className={`transition transform ${
+                    expandedSections.priceRange ? "rotate-0" : "-rotate-90"
+                  }`}
+                />
+              </button>
+              {expandedSections.priceRange && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs text-gray-600">
+                      Min: ${priceRange[0]}
+                    </label>
+                    <input
+                      type="range"
+                      min={filtersData?.priceRange.min || 0}
+                      max={filtersData?.priceRange.max || 1000}
+                      value={priceRange[0]}
+                      onChange={(e) => {
+                        const newMin = Number(e.target.value);
+                        if (newMin <= priceRange[1]) {
+                          setPriceRange([newMin, priceRange[1]]);
+                          setPage(1);
+                        }
+                      }}
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-600">
+                      Max: ${priceRange[1]}
+                    </label>
+                    <input
+                      type="range"
+                      min={filtersData?.priceRange.min || 0}
+                      max={filtersData?.priceRange.max || 1000}
+                      value={priceRange[1]}
+                      onChange={(e) => {
+                        const newMax = Number(e.target.value);
+                        if (newMax >= priceRange[0]) {
+                          setPriceRange([priceRange[0], newMax]);
+                          setPage(1);
+                        }
+                      }}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Ratings Filter - Collapsible */}
+            <div>
+              <button
+                onClick={() => toggleSection("ratings")}
+                className="flex items-center justify-between w-full mb-4"
+              >
+                <h3 className="text-sm font-semibold">Ratings</h3>
+                <FiChevronDown
+                  className={`transition transform ${
+                    expandedSections.ratings ? "rotate-0" : "-rotate-90"
+                  }`}
+                />
+              </button>
+              {expandedSections.ratings && (
+                <div className="space-y-2">
+                  {[5, 4, 3, 2, 1].map((rating) => {
+                    const count =
+                      filtersData?.ratings.find((r) => r.rating === rating)
+                        ?.count || 0;
+                    return (
+                      <button
+                        key={rating}
+                        onClick={() => {
+                          setSelectedRating(
+                            selectedRating === rating ? null : rating,
+                          );
+                          setPage(1);
+                        }}
+                        className={`w-full text-left text-sm py-2 px-3 rounded transition flex items-center justify-between ${
+                          selectedRating === rating
+                            ? "bg-black text-white"
+                            : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        <span className="flex items-center gap-1">
+                          {Array(rating)
+                            .fill(0)
+                            .map((_, i) => (
+                              <span key={i} className="text-xs">
+                                ⭐
+                              </span>
+                            ))}
+                          {rating} Stars
+                        </span>
+                        <span className="text-xs opacity-70">({count})</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
-        </>
-      )}
+        </aside>
+
+        {/* Mobile Filters Sidebar */}
+        {showFiltersSidebar && (
+          <>
+            <div
+              className="fixed inset-0 z-30 bg-black/50 md:hidden"
+              onClick={() => setShowFiltersSidebar(false)}
+            />
+            <aside className="fixed top-0 left-0 z-40 h-screen p-6 overflow-y-auto bg-white border-r border-gray-200 w-72">
+              <button
+                onClick={() => setShowFiltersSidebar(false)}
+                className="flex items-center gap-2 mb-6 text-sm font-semibold"
+              >
+                <IoIosArrowBack className="w-5 h-5" />
+                Back
+              </button>
+
+              {/* Size Filter - Always Expanded */}
+              <div className="pb-6 mb-6 border-b border-gray-200">
+                <h3 className="mb-4 text-sm font-semibold">Size</h3>
+                <div className="flex flex-wrap gap-2">
+                  {filtersData?.sizes.map((size) => (
+                    <button
+                      key={size.value}
+                      onClick={() =>
+                        toggleFilter(
+                          selectedSizes,
+                          size.value,
+                          setSelectedSizes,
+                        )
+                      }
+                      className={`rounded border py-2 px-3 text-xs font-medium transition ${
+                        selectedSizes.includes(size.value)
+                          ? "border-black bg-black text-white"
+                          : "border-gray-300 text-gray-800 hover:border-black"
+                      }`}
+                      title={`${size.count} items`}
+                    >
+                      {size.value}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Availability Filter - Collapsible */}
+              <div className="pb-6 mb-6 border-b border-gray-200">
+                <button
+                  onClick={() => toggleSection("availability")}
+                  className="flex items-center justify-between w-full mb-4"
+                >
+                  <h3 className="text-sm font-semibold">Availability</h3>
+                  <FiChevronDown
+                    className={`transition transform ${
+                      expandedSections.availability ? "rotate-0" : "-rotate-90"
+                    }`}
+                  />
+                </button>
+                {expandedSections.availability && (
+                  <div className="space-y-3">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="availability-mobile"
+                        checked={availability === "all"}
+                        onChange={() => {
+                          setAvailability("all");
+                          setPage(1);
+                        }}
+                        className="rounded"
+                      />
+                      <span className="ml-3 text-sm text-gray-700">
+                        All Items{" "}
+                        <span className="font-medium text-blue-600">
+                          ({filtersData?.availability.inStock.count || 0})
+                        </span>
+                      </span>
+                    </label>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="availability-mobile"
+                        checked={availability === "inStock"}
+                        onChange={() => {
+                          setAvailability("inStock");
+                          setPage(1);
+                        }}
+                        className="rounded"
+                      />
+                      <span className="ml-3 text-sm text-gray-700">
+                        In Stock{" "}
+                        <span className="font-medium text-blue-600">
+                          ({filtersData?.availability.inStock.count || 0})
+                        </span>
+                      </span>
+                    </label>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="availability-mobile"
+                        checked={availability === "outOfStock"}
+                        onChange={() => {
+                          setAvailability("outOfStock");
+                          setPage(1);
+                        }}
+                        className="rounded"
+                      />
+                      <span className="ml-3 text-sm text-gray-700">
+                        Out of Stock{" "}
+                        <span className="font-medium text-blue-600">
+                          ({filtersData?.availability.outOfStock.count || 0})
+                        </span>
+                      </span>
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              {/* Categories Filter - Collapsible */}
+              <div className="pb-6 mb-6 border-b border-gray-200">
+                <button
+                  onClick={() => toggleSection("category")}
+                  className="flex items-center justify-between w-full mb-4"
+                >
+                  <h3 className="text-sm font-semibold">Category</h3>
+                  <FiChevronDown
+                    className={`transition transform ${
+                      expandedSections.category ? "rotate-0" : "-rotate-90"
+                    }`}
+                  />
+                </button>
+                {expandedSections.category && (
+                  <div className="space-y-2">
+                    {filtersData?.categories.map((cat) => (
+                      <button
+                        key={cat.slug}
+                        onClick={() => {
+                          setSelectedCategory(
+                            selectedCategory === cat.slug ? "" : cat.slug,
+                          );
+                          setPage(1);
+                        }}
+                        className={`w-full text-left text-sm py-2 px-3 rounded transition ${
+                          selectedCategory === cat.slug
+                            ? "bg-black text-white font-medium"
+                            : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        <span className="flex items-center justify-between">
+                          <span>{cat.name}</span>
+                          <span className="text-xs opacity-70">
+                            ({cat.count})
+                          </span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Colors Filter - Collapsible */}
+              <div className="pb-6 mb-6 border-b border-gray-200">
+                <button
+                  onClick={() => toggleSection("colors")}
+                  className="flex items-center justify-between w-full mb-4"
+                >
+                  <h3 className="text-sm font-semibold">Colors</h3>
+                  <FiChevronDown
+                    className={`transition transform ${
+                      expandedSections.colors ? "rotate-0" : "-rotate-90"
+                    }`}
+                  />
+                </button>
+                {expandedSections.colors && (
+                  <div className="space-y-2">
+                    {filtersData?.colors.map((color) => (
+                      <label
+                        key={color.value}
+                        className="flex items-center cursor-pointer group"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedColors.includes(color.value)}
+                          onChange={() =>
+                            toggleFilter(
+                              selectedColors,
+                              color.value,
+                              setSelectedColors,
+                            )
+                          }
+                          className="rounded cursor-pointer"
+                        />
+                        <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
+                          {color.value}{" "}
+                          <span className="font-medium text-blue-600">
+                            ({color.count})
+                          </span>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Price Range Filter - Collapsible */}
+              <div className="pb-6 mb-6 border-b border-gray-200">
+                <button
+                  onClick={() => toggleSection("priceRange")}
+                  className="flex items-center justify-between w-full mb-4"
+                >
+                  <h3 className="text-sm font-semibold">Price Range</h3>
+                  <FiChevronDown
+                    className={`transition transform ${
+                      expandedSections.priceRange ? "rotate-0" : "-rotate-90"
+                    }`}
+                  />
+                </button>
+                {expandedSections.priceRange && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs text-gray-600">
+                        Min: ${priceRange[0]}
+                      </label>
+                      <input
+                        type="range"
+                        min={filtersData?.priceRange.min || 0}
+                        max={filtersData?.priceRange.max || 1000}
+                        value={priceRange[0]}
+                        onChange={(e) => {
+                          const newMin = Number(e.target.value);
+                          if (newMin <= priceRange[1]) {
+                            setPriceRange([newMin, priceRange[1]]);
+                            setPage(1);
+                          }
+                        }}
+                        className="w-full"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-600">
+                        Max: ${priceRange[1]}
+                      </label>
+                      <input
+                        type="range"
+                        min={filtersData?.priceRange.min || 0}
+                        max={filtersData?.priceRange.max || 1000}
+                        value={priceRange[1]}
+                        onChange={(e) => {
+                          const newMax = Number(e.target.value);
+                          if (newMax >= priceRange[0]) {
+                            setPriceRange([priceRange[0], newMax]);
+                            setPage(1);
+                          }
+                        }}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Ratings Filter - Collapsible */}
+              <div>
+                <button
+                  onClick={() => toggleSection("ratings")}
+                  className="flex items-center justify-between w-full mb-4"
+                >
+                  <h3 className="text-sm font-semibold">Ratings</h3>
+                  <FiChevronDown
+                    className={`transition transform ${
+                      expandedSections.ratings ? "rotate-0" : "-rotate-90"
+                    }`}
+                  />
+                </button>
+                {expandedSections.ratings && (
+                  <div className="space-y-2">
+                    {[5, 4, 3, 2, 1].map((rating) => {
+                      const count =
+                        filtersData?.ratings.find((r) => r.rating === rating)
+                          ?.count || 0;
+                      return (
+                        <button
+                          key={rating}
+                          onClick={() => {
+                            setSelectedRating(
+                              selectedRating === rating ? null : rating,
+                            );
+                            setPage(1);
+                          }}
+                          className={`w-full text-left text-sm py-2 px-3 rounded transition flex items-center justify-between ${
+                            selectedRating === rating
+                              ? "bg-black text-white"
+                              : "text-gray-700 hover:bg-gray-100"
+                          }`}
+                        >
+                          <span className="flex items-center gap-1">
+                            {Array(rating)
+                              .fill(0)
+                              .map((_, i) => (
+                                <span key={i} className="text-xs">
+                                  ⭐
+                                </span>
+                              ))}
+                            {rating} Stars
+                          </span>
+                          <span className="text-xs opacity-70">({count})</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </aside>
+          </>
+        )}
+
+        {/* Main Content */}
+        <main className="flex-1">
+          {/* Header with Search */}
+          <div className="p-4 border-b border-gray-200 md:p-8">
+            <div className="flex items-center justify-between mb-6 md:hidden">
+              <h1 className="text-2xl font-bold">PRODUCTS</h1>
+              <button
+                onClick={() => setShowFiltersSidebar(true)}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded"
+              >
+                <FiFilter className="w-4 h-4" />
+                Filters
+              </button>
+            </div>
+            <h1 className="hidden mb-6 text-3xl font-bold md:block">
+              PRODUCTS
+            </h1>
+
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} className="relative">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-3 pr-12 border border-gray-300 rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
+              />
+              <button
+                type="submit"
+                className="absolute text-gray-600 -translate-y-1/2 right-4 top-1/2"
+              >
+                <FiSearch className="w-5 h-5" />
+              </button>
+            </form>
+          </div>
+
+          {/* Products Grid */}
+          <div className="p-4 md:p-8">
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-gray-600">Loading products...</div>
+              </div>
+            ) : products.length === 0 ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-gray-600">No products found</div>
+              </div>
+            ) : (
+              <>
+                {/* Products Count */}
+                <div className="mb-6 text-sm text-gray-600">
+                  Showing {products.length} of{" "}
+                  <span className="font-semibold">{totalPages * 12}</span>{" "}
+                  products
+                </div>
+
+                {/* Products Grid */}
+                <div className="grid grid-cols-2 gap-4 mb-8 md:grid-cols-3 lg:grid-cols-4 md:gap-6">
+                  {products.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      addToCart={() => addToCart(product.id, 1)}
+                    />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                <div className="flex items-center justify-center gap-4 mt-8">
+                  <button
+                    onClick={handlePrevPage}
+                    disabled={page === 1}
+                    className="px-6 py-3 font-medium border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  >
+                    Previous
+                  </button>
+                  <div className="text-sm text-gray-600">
+                    Page {page} of {totalPages}
+                  </div>
+                  <button
+                    onClick={handleNextPage}
+                    disabled={page === totalPages}
+                    className="px-6 py-3 font-medium text-white bg-black rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800"
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </main>
+      </div>
     </>
   );
 };

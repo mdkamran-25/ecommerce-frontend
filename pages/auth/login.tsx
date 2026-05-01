@@ -53,9 +53,9 @@ const LoginPage = (): JSX.Element => {
    */
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen ">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="w-12 h-12 mx-auto mb-4 border-b-2 border-blue-600 rounded-full animate-spin"></div>
           <p className="text-gray-600">Checking authentication...</p>
         </div>
       </div>
@@ -145,20 +145,20 @@ const LoginPage = (): JSX.Element => {
         <title>Login - eCommerce Store</title>
       </Head>
 
-      <div className="max-w-md mx-auto mt-8 bg-white border border-gray-200 rounded-lg p-8">
-        <h1 className="text-center text-3xl font-bold mb-6">Login</h1>
+      <div className="max-w-md p-8 mx-auto mt-8 border border-gray-200 rounded-lg bg-black/10">
+        <h1 className="mb-6 text-3xl font-bold text-center">Login</h1>
 
         {unverifiedEmail && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-            <p className="text-yellow-800 font-bold mb-2">Email Not Verified</p>
-            <p className="text-yellow-700 text-sm mb-4">
+          <div className="p-4 mb-6 border border-yellow-200 rounded-lg bg-yellow-50">
+            <p className="mb-2 font-bold text-yellow-800">Email Not Verified</p>
+            <p className="mb-4 text-sm text-yellow-700">
               Your account is pending verification. We sent a verification link
               to:
             </p>
-            <p className="text-yellow-900 font-bold text-center mb-4">
+            <p className="mb-4 font-bold text-center text-yellow-900">
               {unverifiedEmail}
             </p>
-            <p className="text-yellow-700 text-sm mb-4">
+            <p className="mb-4 text-sm text-yellow-700">
               Please check your email (including spam folder) and click the
               verification link.
             </p>
@@ -168,7 +168,7 @@ const LoginPage = (): JSX.Element => {
                 setUnverifiedEmail("");
                 setEmail(unverifiedEmail);
               }}
-              className="w-full bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 transition text-sm"
+              className="w-full px-4 py-2 text-sm text-white transition bg-yellow-600 rounded hover:bg-yellow-700"
             >
               Try Different Email
             </button>
@@ -190,7 +190,7 @@ const LoginPage = (): JSX.Element => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
               required
-              className="input-field w-full"
+              className="w-full input-field"
             />
           </div>
 
@@ -209,12 +209,12 @@ const LoginPage = (): JSX.Element => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 required
-                className="input-field w-full pr-10"
+                className="w-full pr-10 input-field"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3 text-gray-600 hover:text-gray-800"
+                className="absolute text-gray-600 right-3 top-3 hover:text-gray-800"
                 title={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? "👁️" : "👁️‍🗨️"}
@@ -225,7 +225,7 @@ const LoginPage = (): JSX.Element => {
           <div className="mb-6 text-right">
             <Link
               href="/auth/forgot-password"
-              className="text-sm text-blue-600 hover:underline font-semibold"
+              className="text-sm font-semibold text-blue-600 hover:underline"
             >
               Forgot password?
             </Link>
@@ -234,23 +234,23 @@ const LoginPage = (): JSX.Element => {
           <button
             type="submit"
             disabled={isLoading || authLoading}
-            className="btn-primary w-full"
+            className="w-full btn-primary"
           >
             {isLoading || authLoading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <p className="text-center text-gray-600 mt-6">
+        <p className="mt-6 text-center text-gray-600">
           Don't have an account?{" "}
           <Link
             href="/auth/signup"
-            className="text-blue-600 font-bold hover:underline"
+            className="font-bold text-blue-600 hover:underline"
           >
             Sign up here
           </Link>
         </p>
 
-        <p className="text-center mt-4">
+        <p className="mt-4 text-center">
           <Link href="/" className="text-gray-500 hover:text-gray-700">
             Back to home
           </Link>

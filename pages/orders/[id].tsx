@@ -300,13 +300,13 @@ function OrderDetailPageContent(): JSX.Element {
                     Qty: {item.quantity}
                   </p>
                   <p style={{ color: "#666", fontSize: "0.9rem" }}>
-                    Price: ₹{item.price} each
+                    Price: ${item.price} each
                   </p>
                 </div>
 
                 <div style={{ textAlign: "right" }}>
                   <p style={{ fontWeight: "bold", fontSize: "1.1rem" }}>
-                    ₹{(item.quantity * item.price).toFixed(2)}
+                    ${(item.quantity * item.price).toFixed(2)}
                   </p>
                 </div>
               </div>
@@ -340,7 +340,7 @@ function OrderDetailPageContent(): JSX.Element {
                 }}
               >
                 <span>Subtotal:</span>
-                <span>₹{order.totalPrice.toFixed(2)}</span>
+                <span>${order.totalPrice.toFixed(2)}</span>
               </div>
 
               {order.discountAmount > 0 && (
@@ -353,7 +353,7 @@ function OrderDetailPageContent(): JSX.Element {
                   }}
                 >
                   <span>Discount:</span>
-                  <span>-₹{order.discountAmount.toFixed(2)}</span>
+                  <span>-${order.discountAmount.toFixed(2)}</span>
                 </div>
               )}
 
@@ -365,7 +365,7 @@ function OrderDetailPageContent(): JSX.Element {
                 }}
               >
                 <span>Shipping:</span>
-                <span>₹{order.shippingCost.toFixed(2)}</span>
+                <span>${order.shippingCost.toFixed(2)}</span>
               </div>
             </div>
 
@@ -379,7 +379,7 @@ function OrderDetailPageContent(): JSX.Element {
               }}
             >
               <span>Total:</span>
-              <span>₹{order.finalPrice.toFixed(2)}</span>
+              <span>${order.finalPrice.toFixed(2)}</span>
             </div>
 
             <div

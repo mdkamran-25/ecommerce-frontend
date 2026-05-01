@@ -31,6 +31,10 @@
   font-style: normal;
 }
 
+* {
+  font-family: 'Beatrice Deck Trial', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
 html {
   background: linear-gradient(
     180deg,

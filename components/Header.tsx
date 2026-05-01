@@ -66,13 +66,7 @@ const Header: React.FC = () => {
     <>
       {/* Header Navigation */}
       <header className="sticky top-0 z-40 ">
-        <nav
-          className="relative flex items-center justify-between max-w-full px-4 py-4"
-          style={{
-            fontFamily:
-              "'Beatrice Deck Trial', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-          }}
-        >
+        <nav className="relative flex items-center justify-between max-w-full px-4 py-4">
           {/* Left Section: Hamburger Menu, Logo & Navigation Links */}
           <div className="flex items-center gap-6">
             {/* Hamburger Menu Button */}
@@ -116,10 +110,6 @@ const Header: React.FC = () => {
                   key={link.href}
                   href={link.href}
                   className="text-sm font-medium tracking-wide text-gray-800 transition hover:text-gray-600"
-                  style={{
-                    fontFamily:
-                      "'Beatrice Deck Trial', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-                  }}
                 >
                   {link.label}
                 </Link>
@@ -268,10 +258,6 @@ const Header: React.FC = () => {
         className={`fixed left-0 top-0 z-40 w-72 h-screen bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out overflow-y-auto ${
           showSidebar ? "translate-x-0" : "-translate-x-full"
         }`}
-        style={{
-          fontFamily:
-            "'Beatrice Deck Trial', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-        }}
       >
         {/* Sidebar Header with Close Button */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">

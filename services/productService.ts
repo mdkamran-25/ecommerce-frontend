@@ -21,19 +21,38 @@ export const productService = {
   async getProducts(
     page: number = 1,
     limit: number = 50,
-    filters?: FilterOptions,
+    filters?: any,
   ): Promise<ApiPaginatedResponse<Product>> {
     try {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
-        ...(filters?.category && { category: filters.category }),
-        ...(filters?.search && { search: filters.search }),
-        ...(filters?.minPrice && { minPrice: filters.minPrice.toString() }),
-        ...(filters?.maxPrice && { maxPrice: filters.maxPrice.toString() }),
-        ...(filters?.sortBy && { sortBy: filters.sortBy }),
-        ...(filters?.sortOrder && { sortOrder: filters.sortOrder }),
       });
+
+      // Add all filter parameters
+      if (filters?.category) params.append("category", filters.category);
+      if (filters?.search) params.append("search", filters.search);
+      if (filters?.priceMin)
+        params.append("priceMin", filters.priceMin.toString());
+      if (filters?.priceMax)
+        params.append("priceMax", filters.priceMax.toString());
+      if (filters?.sizes) {
+        (Array.isArray(filters.sizes)
+          ? filters.sizes
+          : [filters.sizes]
+        ).forEach((size) => params.append("sizes", size));
+      }
+      if (filters?.colors) {
+        (Array.isArray(filters.colors)
+          ? filters.colors
+          : [filters.colors]
+        ).forEach((color) => params.append("colors", color));
+      }
+      if (filters?.inStock) params.append("inStock", filters.inStock);
+      if (filters?.minRating)
+        params.append("minRating", filters.minRating.toString());
+      if (filters?.sortBy) params.append("sortBy", filters.sortBy);
+      if (filters?.sortOrder) params.append("sortOrder", filters.sortOrder);
 
       const response = await fetch(`${API_BASE_URL}/products?${params}`);
       const data = await response.json();
@@ -103,6 +122,36 @@ export const productService = {
     } catch (error) {
       console.error("Error fetching new products:", error);
       return { success: false, error: "Failed to fetch new products" };
+    }
+  },
+
+  /**
+   * Get all available filters with counts
+   */
+  async getFilters(): Promise<ApiResponse<any>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/products/filters/all`);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching filters:", error);
+      return { success: false, error: "Failed to fetch filters" };
+    }
+  },
+
+  /**
+   * Get all variants for a product
+   */
+  async getProductVariants(productId: string): Promise<ApiResponse<any[]>> {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/products/${productId}/variants`,
+      );
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching variants:", error);
+      return { success: false, error: "Failed to fetch variants" };
     }
   },
 };

@@ -144,7 +144,7 @@ function OrdersListPageContent(): JSX.Element {
                 <div>
                   <p style={{ color: "#999", fontSize: "0.9rem" }}>Total</p>
                   <p style={{ fontSize: "1.1rem", fontWeight: "bold" }}>
-                    ₹{order.finalPrice.toFixed(2)}
+                    ${order.finalPrice.toFixed(2)}
                   </p>
                 </div>
 

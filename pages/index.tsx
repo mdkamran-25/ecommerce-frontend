@@ -102,7 +102,7 @@ export default function Home({}: HomeProps): React.JSX.Element {
             searchQuery={heroSearchQuery}
             onSearchChange={setHeroSearchQuery}
             onSearch={handleHeroSearch}
-            featuredProducts={products.slice(0, 2)}
+            featuredProducts={products}
           />
         </div>
 
