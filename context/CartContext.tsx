@@ -13,6 +13,8 @@ import {
   SetStateAction,
   JSX,
 } from "react";
+import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 import * as cartService from "../services/cartService";
 import { AuthContext } from "./AuthContext";
 import { CartItem } from "../types";
@@ -59,6 +61,7 @@ export const CartProvider = ({ children }: CartProviderProps): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(false);
   const authContext = useContext(AuthContext);
   const user = authContext?.user;
+  const router = useRouter();
 
   const fetchCart = async (): Promise<void> => {
     if (!user) return;
@@ -95,9 +98,33 @@ export const CartProvider = ({ children }: CartProviderProps): JSX.Element => {
     quantity: number,
   ): Promise<void> => {
     try {
+      // Check if user is logged in
+      if (!user) {
+        toast.error("Please login to add items to cart");
+        router.push("/auth/login");
+        return;
+      }
+
       await cartService.addToCart(productId, quantity);
       await fetchCart();
-    } catch (error) {
+      toast.success("Product added to cart!");
+    } catch (error: any) {
+      // Handle unauthorized (401) errors
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        // Clear user from context
+        if (authContext?.setUser) {
+          authContext.setUser(null);
+        }
+        // Redirect to login
+        router.push("/auth/login");
+        return;
+      }
+
+      // Handle other errors
+      const errorMessage =
+        error.response?.data?.message || "Failed to add item to cart";
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -106,7 +133,19 @@ export const CartProvider = ({ children }: CartProviderProps): JSX.Element => {
     try {
       await cartService.removeFromCart(itemId);
       await fetchCart();
-    } catch (error) {
+      toast.success("Item removed from cart");
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        if (authContext?.setUser) {
+          authContext.setUser(null);
+        }
+        router.push("/auth/login");
+        return;
+      }
+      const errorMessage =
+        error.response?.data?.message || "Failed to remove item";
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -118,7 +157,19 @@ export const CartProvider = ({ children }: CartProviderProps): JSX.Element => {
     try {
       await cartService.updateCartItem(itemId, quantity);
       await fetchCart();
-    } catch (error) {
+      toast.success("Cart updated");
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        if (authContext?.setUser) {
+          authContext.setUser(null);
+        }
+        router.push("/auth/login");
+        return;
+      }
+      const errorMessage =
+        error.response?.data?.message || "Failed to update cart";
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -136,8 +187,20 @@ export const CartProvider = ({ children }: CartProviderProps): JSX.Element => {
         },
       );
       await fetchCart();
+      toast.success("Coupon applied successfully!");
       return data;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        if (authContext?.setUser) {
+          authContext.setUser(null);
+        }
+        router.push("/auth/login");
+        return;
+      }
+      const errorMessage =
+        error.response?.data?.message || "Failed to apply coupon";
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -147,7 +210,19 @@ export const CartProvider = ({ children }: CartProviderProps): JSX.Element => {
       await cartService.removeCoupon();
       setPricing(null);
       await fetchCart();
-    } catch (error) {
+      toast.success("Coupon removed");
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        if (authContext?.setUser) {
+          authContext.setUser(null);
+        }
+        router.push("/auth/login");
+        return;
+      }
+      const errorMessage =
+        error.response?.data?.message || "Failed to remove coupon";
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -156,7 +231,18 @@ export const CartProvider = ({ children }: CartProviderProps): JSX.Element => {
     try {
       const { data } = await cartService.validateCartStock();
       return data;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        if (authContext?.setUser) {
+          authContext.setUser(null);
+        }
+        router.push("/auth/login");
+        return;
+      }
+      const errorMessage =
+        error.response?.data?.message || "Failed to validate stock";
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -166,7 +252,19 @@ export const CartProvider = ({ children }: CartProviderProps): JSX.Element => {
       await cartService.clearCart();
       setCart(null);
       setPricing(null);
-    } catch (error) {
+      toast.success("Cart cleared");
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        if (authContext?.setUser) {
+          authContext.setUser(null);
+        }
+        router.push("/auth/login");
+        return;
+      }
+      const errorMessage =
+        error.response?.data?.message || "Failed to clear cart";
+      toast.error(errorMessage);
       throw error;
     }
   };

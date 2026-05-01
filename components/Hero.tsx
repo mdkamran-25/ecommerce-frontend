@@ -8,6 +8,7 @@ import { useContext } from "react";
 import { FiSearch } from "react-icons/fi";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import ProductCard from "./molecules/ProductCard";
+import ProductCarousel from "./molecules/ProductCarousel";
 import { Product } from "../types";
 import { CartContext } from "../context/CartContext";
 
@@ -28,7 +29,7 @@ const Hero: React.FC<HeroProps> = ({
   return (
     <section className="grid grid-cols-1 gap-0 md:grid-cols-3 md:min-h-screen">
       {/* Left: Categories, Search & Text Content */}
-      <div className="flex flex-col p-4 md:p-0">
+      <div className="flex flex-col md:p-0">
         {/* Categories Section */}
         <div className="mb-6 md:mb-8">
           <div
@@ -98,18 +99,14 @@ const Hero: React.FC<HeroProps> = ({
             </span>
           </div>
 
-          {/* Products Display - Mobile Only */}
+          {/* Products Display - Mobile Only with Swipe Carousel */}
           {featuredProducts.length > 0 && (
             <div className="mt-6 md:hidden">
-              <div className="grid grid-cols-2 gap-3">
-                {featuredProducts.slice(0, 2).map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    addToCart={(prod: Product) => addToCart(prod.id, 1)}
-                  />
-                ))}
-              </div>
+              <ProductCarousel
+                products={featuredProducts}
+                addToCart={(product: Product) => addToCart(product.id, 1)}
+                itemsPerView={1}
+              />
             </div>
           )}
 
@@ -117,7 +114,7 @@ const Hero: React.FC<HeroProps> = ({
           <div className="flex flex-col gap-3 mt-8 md:mt-32 md:flex-row md:items-center md:gap-4">
             <Link
               href="/products"
-              className="inline-flex items-center gap-24 px-4 py-3 text-lg font-semibold text-gray-800 transition bg-transparent border border-gray-400 font-beatrice hover:text-black group w-fit whitespace-nowrap"
+              className="inline-flex items-center gap-32 px-4 py-3 text-lg font-semibold text-gray-800 transition bg-transparent border border-gray-400 font-beatrice hover:text-black group w-fit whitespace-nowrap"
             >
               Go To Shop
               <svg
@@ -137,8 +134,8 @@ const Hero: React.FC<HeroProps> = ({
               </svg>
             </Link>
 
-            {/* Carousel Controls */}
-            <div className="flex gap-2 ml-auto md:ml-auto">
+            {/* Carousel Controls - Desktop Only */}
+            <div className="hidden gap-2 md:flex">
               <button className="flex items-center justify-center w-10 h-10 text-gray-800 transition border border-gray-400 md:w-12 md:h-12 hover:bg-gray-800 hover:text-white hover:border-gray-800">
                 <IoIosArrowBack className="w-4 h-4 md:w-5 md:h-5" />
               </button>

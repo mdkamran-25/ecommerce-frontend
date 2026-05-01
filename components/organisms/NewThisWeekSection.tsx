@@ -61,24 +61,24 @@ export const NewThisWeekSection: React.FC<NewThisWeekSectionProps> = ({
 
   return (
     <section className={`${className}`}>
-      <div className="w-full px-4 md:mx-auto md:max-w-7xl md:px-0">
+      <div className="w-full px-0 pt-20 md:py-0 lg:py-0 md:mx-auto md:max-w-7xl md:px-0">
         {/* Section Header */}
         <div className="flex flex-col gap-3 mb-6 md:mb-12 md:flex-row md:items-center md:justify-between">
           <Link href="/products" className="group">
-            <div className="flex items-center gap-2 md:gap-3 cursor-pointer">
-              <SectionTitle className="text-2xl md:text-5xl font-black leading-none transition group-hover:text-blue-600">
+            <div className="flex items-center gap-2 cursor-pointer md:gap-3">
+              <SectionTitle className="text-2xl font-black leading-none transition md:text-5xl group-hover:text-blue-600">
                 NEW
                 <br />
                 THIS WEEK
               </SectionTitle>
-              <span className="ml-1 md:ml-2 text-lg md:text-2xl font-bold text-blue-600">
+              <span className="ml-1 text-lg font-bold text-blue-600 md:ml-2 md:text-2xl">
                 ({totalCount})
               </span>
             </div>
           </Link>
           <Link
             href="/products"
-            className="text-xs md:text-sm font-medium text-gray-600 transition hover:text-gray-800 whitespace-nowrap"
+            className="text-xs font-medium text-gray-600 transition md:text-sm hover:text-gray-800 whitespace-nowrap"
           >
             See All
           </Link>
@@ -92,11 +92,11 @@ export const NewThisWeekSection: React.FC<NewThisWeekSectionProps> = ({
         />
 
         {/* Pagination */}
-        <div className="flex items-center justify-center gap-2 md:gap-3 mt-6 md:mt-12">
+        <div className="flex items-center justify-center gap-2 mt-6 md:gap-3 md:mt-12">
           <button
             onClick={handlePrevious}
             disabled={currentPosition === 0}
-            className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-gray-800 transition border border-gray-400 hover:bg-gray-800 hover:text-white hover:border-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center w-10 h-10 text-gray-800 transition border border-gray-400 md:w-12 md:h-12 hover:bg-gray-800 hover:text-white hover:border-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <IoIosArrowBack className="w-4 h-4 md:w-5 md:h-5" />
           </button>
@@ -104,7 +104,7 @@ export const NewThisWeekSection: React.FC<NewThisWeekSectionProps> = ({
           <button
             onClick={handleNext}
             disabled={currentPosition >= maxPosition}
-            className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 text-gray-800 transition border border-gray-400 hover:bg-gray-800 hover:text-white hover:border-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center w-10 h-10 text-gray-800 transition border border-gray-400 md:w-12 md:h-12 hover:bg-gray-800 hover:text-white hover:border-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <IoIosArrowForward className="w-4 h-4 md:w-5 md:h-5" />
           </button>

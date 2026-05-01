@@ -168,7 +168,7 @@ const Header: React.FC = () => {
                   style={{ strokeWidth: 2 }}
                 />
                 {cart?.items?.length > 0 && (
-                  <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-gray-800 rounded-full md:bg-gray-800">
+                  <span className="absolute flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-gray-800 rounded-full -top-1 -right-3 md:bg-gray-800 md:border-2 md:border-white">
                     {cart.items.length}
                   </span>
                 )}
@@ -258,9 +258,8 @@ const Header: React.FC = () => {
       {/* Sidebar Overlay */}
       {showSidebar && (
         <div
-          className="fixed inset-0 z-30 bg-black bg-opacity-30 md:hidden"
+          className="fixed inset-0 z-30 bg-transparent md:hidden"
           onClick={() => setShowSidebar(false)}
-          style={{ transition: "background-color 0.3s ease" }}
         />
       )}
 
