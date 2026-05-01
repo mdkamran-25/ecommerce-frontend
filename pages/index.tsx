@@ -95,39 +95,50 @@ export default function Home({}: HomeProps): React.JSX.Element {
         <meta name="robots" content="index, follow" />
       </Head>
 
-      <div className="">
-        {/* HERO SECTION - NEW COLLECTION */}
-        <Hero
-          searchQuery={heroSearchQuery}
-          onSearchChange={setHeroSearchQuery}
-          onSearch={handleHeroSearch}
-        />
-
-        {/* NEW THIS WEEK SECTION */}
-        {cartContext && (
-          <NewThisWeekSection
-            products={newThisWeek}
-            addToCart={handleAddToCart}
-            totalCount={newThisWeek.length}
+      <div className="flex flex-col w-full">
+        {/* HERO SECTION - NEW COLLECTION - Order 1 */}
+        <div className="order-1">
+          <Hero
+            searchQuery={heroSearchQuery}
+            onSearchChange={setHeroSearchQuery}
+            onSearch={handleHeroSearch}
+            featuredProducts={products.slice(0, 2)}
           />
+        </div>
+
+        {/* NEW THIS WEEK SECTION - Order 2 on Mobile, stays natural order on Desktop */}
+        {cartContext && (
+          <div className="order-2">
+            <NewThisWeekSection
+              products={newThisWeek}
+              addToCart={handleAddToCart}
+              totalCount={newThisWeek.length}
+            />
+          </div>
         )}
 
-        {/* XIV COLLECTIONS SECTION */}
+        {/* XIV COLLECTIONS SECTION - Order 3 */}
         {cartContext && (
-          <CollectionsSection
-            products={products}
-            loading={loading}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            addToCart={handleAddToCart}
-          />
+          <div className="order-3">
+            <CollectionsSection
+              products={products}
+              loading={loading}
+              selectedCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+              addToCart={handleAddToCart}
+            />
+          </div>
         )}
 
-        {/* OUR APPROACH TO FASHION DESIGN SECTION */}
-        <ApproachSection />
+        {/* OUR APPROACH TO FASHION DESIGN SECTION - Order 4 */}
+        <div className="order-4">
+          <ApproachSection />
+        </div>
 
-        {/* FOOTER */}
-        <Footer />
+        {/* FOOTER - Order 5 */}
+        <div className="order-5">
+          <Footer />
+        </div>
       </div>
     </>
   );

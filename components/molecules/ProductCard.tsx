@@ -24,7 +24,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <div className="cursor-pointer group">
       {/* Product Image Container */}
-      <div className="relative mb-4">
+      <div className="relative mb-3 md:mb-4">
         <ProductImage
           src={product.images?.[0]}
           alt={product.name}
@@ -60,7 +60,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <Text
             variant={cardSize === "large" ? "subtitle" : "body"}
             weight="bold"
-            className="mb-2 transition group-hover:text-gray-600 line-clamp-2"
+            className="mb-2 transition group-hover:text-gray-600 line-clamp-2 text-sm md:text-base"
           >
             {product.name}
           </Text>
@@ -68,7 +68,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Price and Variants */}
         <div className="flex items-center justify-between">
-          <Price amount={product.price} className="mb-0" />
+          <Price amount={product.price} className="mb-0 text-sm md:text-base" />
           {product.variantCount && product.variantCount > 0 && (
             <Text variant="caption" color="muted" className="text-xs">
               +{product.variantCount}

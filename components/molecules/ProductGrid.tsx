@@ -35,7 +35,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
 
   return (
     <div
-      className={`grid grid-cols-1 gap-6 sm:grid-cols-2 ${columnClasses[columns]} ${gapClasses[gap]} ${className}`}
+      className={`grid grid-cols-1 gap-4 md:gap-6 sm:grid-cols-2 ${columnClasses[columns]} ${gapClasses[gap]} ${className}`}
     >
       {products.map((product) => (
         <ProductCard key={product.id} product={product} addToCart={addToCart} />

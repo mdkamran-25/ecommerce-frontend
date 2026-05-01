@@ -60,10 +60,10 @@ export const NewThisWeekSection: React.FC<NewThisWeekSectionProps> = ({
   };
 
   return (
-    <section className={` ${className}`}>
-      <div className="mx-auto max-w-7xl">
+    <section className={`${className}`}>
+      <div className="w-full px-4 md:mx-auto md:max-w-7xl md:px-0">
         {/* Section Header */}
-        <div className="flex flex-col gap-3 mb-8 md:mb-12 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-3 mb-6 md:mb-12 md:flex-row md:items-center md:justify-between">
           <Link href="/products" className="group">
             <div className="flex items-center gap-2 md:gap-3 cursor-pointer">
               <SectionTitle className="text-2xl md:text-5xl font-black leading-none transition group-hover:text-blue-600">
@@ -71,7 +71,7 @@ export const NewThisWeekSection: React.FC<NewThisWeekSectionProps> = ({
                 <br />
                 THIS WEEK
               </SectionTitle>
-              <span className="ml-1 md:ml-2 text-xl md:text-2xl font-bold text-blue-600">
+              <span className="ml-1 md:ml-2 text-lg md:text-2xl font-bold text-blue-600">
                 ({totalCount})
               </span>
             </div>
@@ -92,7 +92,7 @@ export const NewThisWeekSection: React.FC<NewThisWeekSectionProps> = ({
         />
 
         {/* Pagination */}
-        <div className="flex items-center justify-center gap-2 md:gap-3 mt-8 md:mt-12">
+        <div className="flex items-center justify-center gap-2 md:gap-3 mt-6 md:mt-12">
           <button
             onClick={handlePrevious}
             disabled={currentPosition === 0}

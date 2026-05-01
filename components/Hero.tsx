@@ -4,22 +4,29 @@
  */
 
 import Link from "next/link";
+import { useContext } from "react";
 import { FiSearch } from "react-icons/fi";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import ProductCard from "./molecules/ProductCard";
+import { Product } from "../types";
+import { CartContext } from "../context/CartContext";
 
 interface HeroProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onSearch: (e: React.FormEvent<HTMLFormElement>) => void;
+  featuredProducts?: Product[];
 }
 
 const Hero: React.FC<HeroProps> = ({
   searchQuery,
   onSearchChange,
   onSearch,
+  featuredProducts = [],
 }) => {
+  const { addToCart } = useContext(CartContext) as any;
   return (
-    <section className="grid min-h-screen grid-cols-1 gap-0 md:grid-cols-3">
+    <section className="grid grid-cols-1 gap-0 md:grid-cols-3 md:min-h-screen">
       {/* Left: Categories, Search & Text Content */}
       <div className="flex flex-col p-4 md:p-0">
         {/* Categories Section */}
@@ -34,7 +41,7 @@ const Hero: React.FC<HeroProps> = ({
             {["MEN", "WOMEN", "KIDS"].map((category) => (
               <p
                 key={category}
-                className="text-xs tracking-wide text-gray-800 transition cursor-pointer md:text-sm font-extralight hover:text-gray-600"
+                className="text-lg tracking-wide text-gray-800 transition cursor-pointer md:text-lg font-extralight hover:text-gray-600"
               >
                 {category}
               </p>
@@ -54,7 +61,7 @@ const Hero: React.FC<HeroProps> = ({
               placeholder="Search"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="flex-1 min-w-0 text-xs text-gray-800 placeholder-gray-500 bg-transparent outline-none md:text-sm"
+              className="flex-1 min-w-0 text-lg text-gray-800 placeholder-gray-500 bg-transparent outline-none md:text-sm"
             />
           </form>
         </div>
@@ -63,7 +70,7 @@ const Hero: React.FC<HeroProps> = ({
         <div className="flex flex-col flex-1">
           <div>
             <h1
-              className="text-3xl md:text-6xl font-extrabold uppercase leading-none tracking-[-0.04em] text-black/60 [text-shadow:0_0_1px_rgba(0,0,0,0.1)]"
+              className="text-5xl md:text-6xl font-extrabold uppercase leading-none tracking-[-0.04em] text-black/60 [text-shadow:0_0_1px_rgba(0,0,0,0.1)]"
               style={{
                 fontFamily:
                   "'Beatrice Deck Trial', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
@@ -90,6 +97,21 @@ const Hero: React.FC<HeroProps> = ({
               2026
             </span>
           </div>
+
+          {/* Products Display - Mobile Only */}
+          {featuredProducts.length > 0 && (
+            <div className="mt-6 md:hidden">
+              <div className="grid grid-cols-2 gap-3">
+                {featuredProducts.slice(0, 2).map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    addToCart={(prod: Product) => addToCart(prod.id, 1)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Go To Shop Button & Carousel Controls */}
           <div className="flex flex-col gap-3 mt-8 md:mt-32 md:flex-row md:items-center md:gap-4">

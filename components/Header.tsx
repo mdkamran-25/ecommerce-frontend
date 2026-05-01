@@ -67,7 +67,7 @@ const Header: React.FC = () => {
       {/* Header Navigation */}
       <header className="sticky top-0 z-40 ">
         <nav
-          className="relative flex items-center justify-between max-w-full px-6 py-4"
+          className="relative flex items-center justify-between max-w-full px-4 py-4"
           style={{
             fontFamily:
               "'Beatrice Deck Trial', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
@@ -139,7 +139,7 @@ const Header: React.FC = () => {
           </div>
 
           {/* Right Section: Icons */}
-          <div className="flex items-center gap-4 md:gap-8">
+          <div className="flex items-center gap-2 md:gap-8">
             {/* Wishlist Icon - Hidden on Mobile, Shown on Desktop */}
             <button
               className="hidden p-2.5 text-white transition bg-black rounded-full hover:bg-gray-800 md:block"

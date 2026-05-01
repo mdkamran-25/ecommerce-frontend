@@ -45,47 +45,47 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
   };
 
   return (
-    <div className="card hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+    <div className="transition-all duration-200 card hover:shadow-lg hover:-translate-y-1">
       {product.images?.[0] && (
         <div className="mb-4">
           <img
             src={product.images[0]}
             alt={product.name}
-            className="w-full h-48 object-cover rounded-lg"
+            className="object-cover w-full h-48 rounded-lg"
           />
         </div>
       )}
 
-      <h3 className="font-bold text-lg mb-2">{product.name}</h3>
+      <h3 className="mb-2 text-lg font-bold">{product.name}</h3>
 
       {product.compareAt && (
-        <p className="text-gray-500 line-through text-sm mb-1">
+        <p className="mb-1 text-sm text-gray-500 line-through">
           ₹{product.compareAt}
         </p>
       )}
 
-      <p className="text-2xl font-bold text-green-600 mb-2">
+      <p className="mb-2 text-2xl font-bold text-green-600">
         ₹{product.price || 0}
       </p>
 
-      <p className="text-gray-600 text-sm mb-3">
+      <p className="mb-3 text-sm text-gray-600">
         {product.description
           ? product.description.substring(0, 80)
           : "No description"}
         ...
       </p>
 
-      <p className="text-sm mb-4">
+      <p className="mb-4 text-sm">
         Stock: <strong>{product.stock}</strong>
       </p>
 
       <div className="flex gap-2">
         <Link href={`/products/${product.id}`} className="flex-1">
-          <button className="btn-primary w-full text-sm">View Details</button>
+          <button className="w-full text-sm btn-primary">View Details</button>
         </Link>
         <button
           onClick={handleAddToCart}
-          className="btn-success flex-1 text-sm"
+          className="flex-1 text-sm btn-success"
           disabled={product.stock === 0}
         >
           {product.stock === 0 ? "Out of Stock" : "Add to Cart"}

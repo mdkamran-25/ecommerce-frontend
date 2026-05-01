@@ -40,7 +40,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
           />
           <div className="flex flex-col min-h-screen">
             <Header />
-            <main className="w-full px-8 py-8 mx-auto grow">
+            <main className="w-full px-6 py-8 mx-auto grow">
               <Component {...pageProps} />
             </main>
           </div>
