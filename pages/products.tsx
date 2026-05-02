@@ -613,7 +613,7 @@ const ProductsPage = (): JSX.Element => {
               className="fixed inset-0 z-30 bg-black/50 md:hidden"
               onClick={() => setShowFiltersSidebar(false)}
             />
-            <aside className="fixed top-0 left-0 z-40 h-screen p-6 overflow-y-auto bg-white border-r border-gray-200 w-72">
+            <aside className="fixed top-0 left-0 z-40 h-screen p-6 overflow-y-auto border-r border-gray-200 w-72">
               <button
                 onClick={() => setShowFiltersSidebar(false)}
                 className="flex items-center gap-2 mb-6 text-sm font-semibold"

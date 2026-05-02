@@ -15,6 +15,9 @@ export interface Product {
   rating?: number;
   reviews?: number;
   sku?: string;
+  vendor?: string;
+  weight?: number;
+  dimensions?: string;
   variantCount?: number;
   variants?: Array<{ id: string; type: string; value: string; stock: number }>;
 }

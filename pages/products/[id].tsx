@@ -4,6 +4,7 @@
  */
 
 import { useRouter } from "next/router";
+import Link from "next/link";
 import { useEffect, useState, useContext, FC } from "react";
 import Head from "next/head";
 import productService from "../../services/productService";
@@ -331,7 +332,7 @@ const ProductDetail: FC = () => {
         <div className="mx-auto max-w-7xl">
           <button
             onClick={() => router.back()}
-            className="mb-6 inline-flex items-center gap-2 text-sm font-medium tracking-wide text-slate-600 transition hover:text-slate-900"
+            className="inline-flex items-center gap-2 mb-6 text-sm font-medium tracking-wide transition text-slate-600 hover:text-slate-900"
           >
             <span className="text-lg">←</span>
             Back
@@ -344,16 +345,16 @@ const ProductDetail: FC = () => {
                   <img
                     src={mainImage}
                     alt={product.name}
-                    className="h-135 w-full object-cover object-center md:h-155"
+                    className="object-cover object-center w-full h-135 md:h-155"
                   />
                 ) : (
-                  <div className="flex h-135 items-center justify-center bg-slate-100 text-sm text-slate-500 md:h-155">
+                  <div className="flex items-center justify-center text-sm h-135 bg-slate-100 text-slate-500 md:h-155">
                     No image available
                   </div>
                 )}
               </div>
 
-              <div className="flex gap-3 overflow-x-auto pb-1 lg:mt-0 lg:flex-col lg:overflow-visible lg:pb-0">
+              <div className="flex gap-3 pb-1 overflow-x-auto lg:mt-0 lg:flex-col lg:overflow-visible lg:pb-0">
                 {galleryImages.length > 0 ? (
                   galleryImages.map((image, index) => (
                     <button
@@ -369,7 +370,7 @@ const ProductDetail: FC = () => {
                       <img
                         src={image}
                         alt={`${product.name} thumbnail ${index + 1}`}
-                        className="h-full w-full object-cover"
+                        className="object-cover w-full h-full"
                       />
                     </button>
                   ))
@@ -382,11 +383,11 @@ const ProductDetail: FC = () => {
             </section>
 
             <aside className="hidden lg:block">
-              <div className="mx-auto h-10 w-10 rotate-45 border border-slate-900 bg-slate-900" />
+              <div className="w-10 h-10 mx-auto rotate-45 border border-slate-900 bg-slate-900" />
             </aside>
 
             <section className="border border-slate-200 bg-white/85 p-6 shadow-[0_20px_70px_rgba(0,0,0,0.08)] backdrop-blur-sm md:p-8 lg:sticky lg:top-6">
-              <div className="mb-6 flex items-start justify-between gap-4">
+              <div className="flex items-start justify-between gap-4 mb-6">
                 <div>
                   <p className="mb-3 text-[11px] uppercase tracking-[0.32em] text-slate-500">
                     {typeof product.category === "string"
@@ -400,7 +401,7 @@ const ProductDetail: FC = () => {
 
                 <button
                   type="button"
-                  className="inline-flex h-10 w-10 items-center justify-center border border-slate-300 text-slate-500 transition hover:border-slate-900 hover:text-slate-900"
+                  className="inline-flex items-center justify-center w-10 h-10 transition border border-slate-300 text-slate-500 hover:border-slate-900 hover:text-slate-900"
                   aria-label="Save product"
                 >
                   ♡
@@ -409,7 +410,7 @@ const ProductDetail: FC = () => {
 
               <div className="mb-6 space-y-1">
                 {product.compareAt ? (
-                  <p className="text-sm text-slate-400 line-through">
+                  <p className="text-sm line-through text-slate-400">
                     {currency.format(product.compareAt)}
                   </p>
                 ) : null}
@@ -425,13 +426,13 @@ const ProductDetail: FC = () => {
 
               <div className="mb-5 flex items-center gap-3 text-xs uppercase tracking-[0.28em] text-slate-500">
                 <span>{product.stock > 0 ? "In stock" : "Out of stock"}</span>
-                <span className="h-px w-8 bg-slate-300" />
+                <span className="w-8 h-px bg-slate-300" />
                 <span>{product.stock} available</span>
               </div>
 
               {colorVariants.length > 0 && (
                 <div className="mb-6">
-                  <div className="mb-3 flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-3">
                     <h3 className="text-xs uppercase tracking-[0.28em] text-slate-500">
                       Color
                     </h3>
@@ -469,7 +470,7 @@ const ProductDetail: FC = () => {
 
               {sizeVariants.length > 0 && (
                 <div className="mb-6">
-                  <div className="mb-3 flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-3">
                     <h3 className="text-xs uppercase tracking-[0.28em] text-slate-500">
                       Size
                     </h3>
@@ -523,7 +524,7 @@ const ProductDetail: FC = () => {
                 </div>
               )}
 
-              <div className="mb-6 grid gap-2 text-sm text-slate-600 md:grid-cols-2">
+              <div className="grid gap-2 mb-6 text-sm text-slate-600 md:grid-cols-2">
                 {product.sku ? (
                   <div>
                     <span className="font-medium text-slate-900">SKU:</span>{" "}
@@ -553,12 +554,12 @@ const ProductDetail: FC = () => {
               </div>
 
               {error && (
-                <div className="mb-4 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <div className="px-4 py-3 mb-4 text-sm text-red-700 border border-red-200 bg-red-50">
                   {error}
                 </div>
               )}
 
-              <div className="mb-4 flex items-end gap-4">
+              <div className="flex items-end gap-4 mb-4">
                 <div>
                   <label className="mb-2 block text-xs uppercase tracking-[0.28em] text-slate-500">
                     Quantity
@@ -571,7 +572,7 @@ const ProductDetail: FC = () => {
                     }
                     min="1"
                     max={product.stock}
-                    className="w-24 border border-slate-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-slate-900"
+                    className="w-24 px-3 py-2 text-sm transition bg-white border outline-none border-slate-300 focus:border-slate-900"
                   />
                 </div>
                 <button
@@ -710,11 +711,11 @@ const ProductDetail: FC = () => {
 
         {!user && (
           <p style={{ marginBottom: "2rem", color: "#666" }}>
-            <NextLink href="/auth/login">
+            <Link href="/auth/login">
               <span style={{ color: "#007bff", cursor: "pointer" }}>
                 Sign in
               </span>
-            </NextLink>{" "}
+            </Link>{" "}
             to write a review
           </p>
         )}
