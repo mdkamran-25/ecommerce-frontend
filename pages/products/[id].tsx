@@ -76,6 +76,24 @@ interface ReviewForm {
 }
 
 /**
+ * Review stars component and helpers
+ */
+const RatingStars: FC<{ rating: number; size?: string }> = ({
+  rating,
+  size = "1rem",
+}) => {
+  return (
+    <span style={{ fontSize: size, letterSpacing: "2px" }}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <span key={i} style={{ color: i <= rating ? "#ffc107" : "#ddd" }}>
+          ★
+        </span>
+      ))}
+    </span>
+  );
+};
+
+/**
  * ProductDetail - Product detail page with reviews section
  */
 const ProductDetail: FC = () => {
@@ -135,6 +153,7 @@ const ProductDetail: FC = () => {
     };
 
     fetchProduct();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, user]);
 
   useEffect(() => {
@@ -257,24 +276,6 @@ const ProductDetail: FC = () => {
   };
 
   /**
-   * Rating stars component
-   */
-  const RatingStars: FC<{ rating: number; size?: string }> = ({
-    rating,
-    size = "1rem",
-  }) => {
-    return (
-      <span style={{ fontSize: size, letterSpacing: "2px" }}>
-        {[1, 2, 3, 4, 5].map((i) => (
-          <span key={i} style={{ color: i <= rating ? "#ffc107" : "#ddd" }}>
-            ★
-          </span>
-        ))}
-      </span>
-    );
-  };
-
-  /**
    * Handle add to cart
    */
   const handleAddToCart = async () => {
@@ -291,7 +292,7 @@ const ProductDetail: FC = () => {
     try {
       setAdding(true);
       setError("");
-      await addToCart(product?.id, quantity);
+      await addToCart(product?.id, quantity, selectedSize, selectedColor);
       toast.success(`Added ${quantity} item(s) to cart!`);
       setQuantity(1);
     } catch (error: any) {
@@ -329,14 +330,29 @@ const ProductDetail: FC = () => {
         <meta name="description" content={product.description} />
       </Head>
 
-      <div className="min-h-screen px-4 py-4 text-slate-900 md:px-8 lg:px-12">
+      <div className="min-h-screen px-4 py-0 text-slate-900 md:px-8 lg:px-12">
         <div className="mx-auto max-w-7xl">
           <button
             onClick={() => router.back()}
             className="inline-flex items-center gap-2 mb-6 text-sm font-medium tracking-wide transition text-slate-600 hover:text-slate-900"
+            aria-label="Go back"
           >
-            <span className="text-lg">←</span>
-            Back
+            <svg
+              width="61"
+              height="14"
+              viewBox="0 0 61 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M60.25 6.75H0.75M0.75 6.75L6.75 0.75M0.75 6.75L6.75 12.75"
+                stroke="black"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="hidden sm:inline">Back</span>
           </button>
 
           <div className="grid gap-6 lg:grid-cols-[1.15fr_0.9fr] lg:items-start">
@@ -346,7 +362,7 @@ const ProductDetail: FC = () => {
                   <img
                     src={mainImage}
                     alt={product.name}
-                    className="object-cover object-center w-full h-135 md:h-135"
+                    className="object-cover object-center w-full h-135 md:h-155"
                   />
                 ) : (
                   <div className="flex items-center justify-center text-sm h-135 bg-slate-100 text-slate-500 md:h-155">
@@ -588,347 +604,211 @@ const ProductDetail: FC = () => {
               )}
             </section>
           </div>
-        </div>
-      </div>
 
-      {/* Reviews Section */}
-      <div
-        style={{
-          marginTop: "3rem",
-          borderTop: "1px solid #ddd",
-          paddingTop: "2rem",
-        }}
-      >
-        <h2>Customer Reviews</h2>
+          {/* Reviews Section - aligned with main page container for consistent padding */}
+          <div className="mt-12 border-t border-slate-200 pt-8">
+            <h2 className="text-2xl font-semibold mb-6">Customer Reviews</h2>
 
-        {ratingStats && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "200px 1fr",
-              gap: "2rem",
-              marginBottom: "2rem",
-              padding: "1.5rem",
-              backgroundColor: "#f9f9f9",
-              borderRadius: "8px",
-            }}
-          >
-            <div style={{ textAlign: "center" }}>
+            {ratingStats && (
               <div
-                style={{
-                  fontSize: "3rem",
-                  fontWeight: "bold",
-                  marginBottom: "0.5rem",
-                }}
+                className="grid"
+                style={{ gridTemplateColumns: "200px 1fr", gap: "1rem" }}
               >
-                {ratingStats.averageRating.toFixed(1)}
-              </div>
-              <RatingStars
-                rating={Math.round(ratingStats.averageRating)}
-                size="1.5rem"
-              />
-              <p
-                style={{
-                  fontSize: "0.9rem",
-                  color: "#666",
-                  marginTop: "0.5rem",
-                }}
-              >
-                {ratingStats.totalReviews} review
-                {ratingStats.totalReviews !== 1 ? "s" : ""}
-              </p>
-            </div>
-
-            <div>
-              {[5, 4, 3, 2, 1].map((stars) => (
-                <div
-                  key={stars}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "1rem",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  <div style={{ width: "30px", textAlign: "right" }}>
-                    {stars}★
+                <div className="mb-6 p-6 bg-slate-50 rounded-md text-center">
+                  <div className="text-4xl font-bold mb-2">
+                    {ratingStats.averageRating.toFixed(1)}
                   </div>
-                  <div
-                    style={{
-                      width: "200px",
-                      height: "8px",
-                      backgroundColor: "#ddd",
-                      borderRadius: "4px",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        height: "100%",
-                        backgroundColor: "#ffc107",
-                        width:
-                          ratingStats.totalReviews > 0
-                            ? `${(ratingStats.ratingDistribution[stars] / ratingStats.totalReviews) * 100}%`
-                            : "0%",
-                      }}
-                    />
-                  </div>
-                  <span style={{ fontSize: "0.9rem", color: "#666" }}>
-                    {ratingStats.ratingDistribution[stars]}
-                  </span>
+                  <RatingStars
+                    rating={Math.round(ratingStats.averageRating)}
+                    size="1.5rem"
+                  />
+                  <p className="text-sm text-slate-600 mt-2">
+                    {ratingStats.totalReviews} review
+                    {ratingStats.totalReviews !== 1 ? "s" : ""}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
 
-        {user && !showReviewForm && !userReview && (
-          <button
-            onClick={() => setShowReviewForm(true)}
-            style={{
-              marginBottom: "2rem",
-              padding: "0.75rem 1.5rem",
-              backgroundColor: "#007bff",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontSize: "1rem",
-            }}
-          >
-            Write a Review
-          </button>
-        )}
-
-        {!user && (
-          <p style={{ marginBottom: "2rem", color: "#666" }}>
-            <Link href="/auth/login">
-              <span style={{ color: "#007bff", cursor: "pointer" }}>
-                Sign in
-              </span>
-            </Link>{" "}
-            to write a review
-          </p>
-        )}
-
-        {showReviewForm && user && (
-          <form
-            onSubmit={handleSubmitReview}
-            style={{
-              marginBottom: "2rem",
-              padding: "1.5rem",
-              backgroundColor: "#f9f9f9",
-              borderRadius: "8px",
-              border: "1px solid #ddd",
-            }}
-          >
-            <h3 style={{ marginBottom: "1rem" }}>
-              {userReview ? "Update Your Review" : "Share Your Review"}
-            </h3>
-
-            {reviewError && (
-              <div
-                style={{
-                  padding: "1rem",
-                  backgroundColor: "#f8d7da",
-                  color: "#721c24",
-                  borderRadius: "4px",
-                  marginBottom: "1rem",
-                }}
-              >
-                {reviewError}
+                <div className="mb-6 p-6 bg-slate-50 rounded-md">
+                  {[5, 4, 3, 2, 1].map((stars) => (
+                    <div key={stars} className="flex items-center gap-4 mb-2">
+                      <div className="w-8 text-right">{stars}★</div>
+                      <div className="w-56 h-2 bg-slate-200 rounded overflow-hidden">
+                        <div
+                          className="h-full bg-amber-400"
+                          style={{
+                            width:
+                              ratingStats.totalReviews > 0
+                                ? `${(ratingStats.ratingDistribution[stars] / ratingStats.totalReviews) * 100}%`
+                                : "0%",
+                          }}
+                        />
+                      </div>
+                      <span className="text-sm text-slate-600">
+                        {ratingStats.ratingDistribution[stars]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
-            <div style={{ marginBottom: "1rem" }}>
-              <label style={{ display: "block", marginBottom: "0.5rem" }}>
-                Rating:{" "}
-                <RatingStars rating={parseInt(String(reviewForm.rating))} />
-              </label>
-              <select
-                value={reviewForm.rating}
-                onChange={(e) =>
-                  setReviewForm({ ...reviewForm, rating: e.target.value })
-                }
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  borderRadius: "4px",
-                  border: "1px solid #ddd",
-                }}
-              >
-                <option value="5">5 Stars - Excellent</option>
-                <option value="4">4 Stars - Good</option>
-                <option value="3">3 Stars - Average</option>
-                <option value="2">2 Stars - Poor</option>
-                <option value="1">1 Star - Terrible</option>
-              </select>
-            </div>
-
-            <div style={{ marginBottom: "1rem" }}>
-              <label style={{ display: "block", marginBottom: "0.5rem" }}>
-                Review Title *
-              </label>
-              <input
-                type="text"
-                value={reviewForm.title}
-                onChange={(e) =>
-                  setReviewForm({ ...reviewForm, title: e.target.value })
-                }
-                placeholder="What's your main impression?"
-                maxLength={100}
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  borderRadius: "4px",
-                  border: "1px solid #ddd",
-                  boxSizing: "border-box",
-                }}
-                required
-              />
-            </div>
-
-            <div style={{ marginBottom: "1rem" }}>
-              <label style={{ display: "block", marginBottom: "0.5rem" }}>
-                Review Comment * (minimum 10 characters)
-              </label>
-              <textarea
-                value={reviewForm.comment}
-                onChange={(e) =>
-                  setReviewForm({ ...reviewForm, comment: e.target.value })
-                }
-                placeholder="Share your experience with this product..."
-                rows={5}
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  borderRadius: "4px",
-                  border: "1px solid #ddd",
-                  boxSizing: "border-box",
-                  fontFamily: "inherit",
-                }}
-                required
-              />
-            </div>
-
-            <div style={{ display: "flex", gap: "1rem" }}>
+            {user && !showReviewForm && !userReview && (
               <button
-                type="submit"
-                disabled={submittingReview}
-                style={{
-                  padding: "0.75rem 1.5rem",
-                  backgroundColor: "#28a745",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: submittingReview ? "not-allowed" : "pointer",
-                  fontSize: "1rem",
-                  opacity: submittingReview ? 0.6 : 1,
-                }}
+                onClick={() => setShowReviewForm(true)}
+                className="mb-6 px-4 py-2 bg-blue-600 text-white rounded"
               >
-                {submittingReview ? "Submitting..." : "Submit Review"}
+                Write a Review
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowReviewForm(false);
-                  setReviewError("");
-                  if (!userReview) {
-                    setReviewForm({ rating: 5, title: "", comment: "" });
-                  }
-                }}
-                style={{
-                  padding: "0.75rem 1.5rem",
-                  backgroundColor: "#6c757d",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontSize: "1rem",
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        )}
+            )}
 
-        {loadingReviews ? (
-          <div style={{ textAlign: "center", padding: "2rem" }}>
-            Loading reviews...
-          </div>
-        ) : reviews.length === 0 ? (
-          <p style={{ color: "#666", textAlign: "center", padding: "2rem" }}>
-            No reviews yet. Be the first to review!
-          </p>
-        ) : (
-          <div>
-            {reviews.map((review) => (
-              <div
-                key={review.id}
-                style={{
-                  padding: "1.5rem",
-                  borderBottom: "1px solid #ddd",
-                  marginBottom: "1rem",
-                }}
+            {!user && (
+              <p className="mb-6 text-slate-600">
+                <Link href="/auth/login">
+                  <span className="text-blue-600 cursor-pointer">Sign in</span>
+                </Link>{" "}
+                to write a review
+              </p>
+            )}
+
+            {showReviewForm && user && (
+              <form
+                onSubmit={handleSubmitReview}
+                className="mb-6 p-6 bg-slate-50 rounded border border-slate-200"
               >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  <div>
-                    <p style={{ fontWeight: "bold", marginBottom: "0.25rem" }}>
-                      {review.user?.firstName} {review.user?.lastName}
-                    </p>
-                    <RatingStars rating={review.rating} />
+                <h3 className="mb-4">
+                  {userReview ? "Update Your Review" : "Share Your Review"}
+                </h3>
+
+                {reviewError && (
+                  <div className="p-4 mb-4 bg-red-50 text-red-700 rounded">
+                    {reviewError}
                   </div>
-                  {user?.userId === review.userId && (
-                    <button
-                      onClick={() => handleDeleteReview(review.id)}
-                      style={{
-                        padding: "0.5rem 1rem",
-                        backgroundColor: "#dc3545",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      Delete
-                    </button>
-                  )}
+                )}
+
+                <div className="mb-4">
+                  <label className="block mb-2">Rating: </label>
+                  <div className="mb-2">
+                    <RatingStars rating={parseInt(String(reviewForm.rating))} />
+                  </div>
+                  <select
+                    value={reviewForm.rating}
+                    onChange={(e) =>
+                      setReviewForm({ ...reviewForm, rating: e.target.value })
+                    }
+                    className="w-full p-2 border rounded"
+                  >
+                    <option value="5">5 Stars - Excellent</option>
+                    <option value="4">4 Stars - Good</option>
+                    <option value="3">3 Stars - Average</option>
+                    <option value="2">2 Stars - Poor</option>
+                    <option value="1">1 Star - Terrible</option>
+                  </select>
                 </div>
 
-                <p style={{ fontWeight: "bold", margin: "0.75rem 0 0.5rem 0" }}>
-                  {review.title}
-                </p>
+                <div className="mb-4">
+                  <label className="block mb-2">Review Title *</label>
+                  <input
+                    type="text"
+                    value={reviewForm.title}
+                    onChange={(e) =>
+                      setReviewForm({ ...reviewForm, title: e.target.value })
+                    }
+                    placeholder="What's your main impression?"
+                    maxLength={100}
+                    required
+                    className="w-full p-3 border rounded"
+                  />
+                </div>
 
-                <p
-                  style={{
-                    color: "#666",
-                    lineHeight: "1.6",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  {review.content}
-                </p>
+                <div className="mb-4">
+                  <label className="block mb-2">
+                    Review Comment * (minimum 10 characters)
+                  </label>
+                  <textarea
+                    value={reviewForm.comment}
+                    onChange={(e) =>
+                      setReviewForm({ ...reviewForm, comment: e.target.value })
+                    }
+                    placeholder="Share your experience with this product..."
+                    rows={5}
+                    required
+                    className="w-full p-3 border rounded font-sans"
+                  />
+                </div>
 
-                <p style={{ fontSize: "0.85rem", color: "#999" }}>
-                  {new Date(review.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
+                <div className="flex gap-4">
+                  <button
+                    type="submit"
+                    disabled={submittingReview}
+                    className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-60"
+                  >
+                    {submittingReview ? "Submitting..." : "Submit Review"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowReviewForm(false);
+                      setReviewError("");
+                      if (!userReview)
+                        setReviewForm({ rating: 5, title: "", comment: "" });
+                    }}
+                    className="px-4 py-2 bg-gray-600 text-white rounded"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {loadingReviews ? (
+              <div className="text-center py-8">Loading reviews...</div>
+            ) : reviews.length === 0 ? (
+              <p className="text-slate-600 text-center py-8">
+                No reviews yet. Be the first to review!
+              </p>
+            ) : (
+              <div>
+                {reviews.map((review) => (
+                  <div
+                    key={review.id}
+                    className="pb-6 mb-4 border-b border-slate-200"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <p className="font-bold mb-1">
+                          {review.user?.firstName} {review.user?.lastName}
+                        </p>
+                        <RatingStars rating={review.rating} />
+                      </div>
+                      {user?.userId === review.userId && (
+                        <button
+                          onClick={() => handleDeleteReview(review.id)}
+                          className="px-3 py-1 bg-red-600 text-white rounded text-sm"
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
+
+                    <p className="font-bold mb-2">{review.title}</p>
+
+                    <p className="text-slate-600 leading-7 mb-2">
+                      {review.content}
+                    </p>
+
+                    <p className="text-sm text-slate-400">
+                      {new Date(review.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        )}
+        </div>
       </div>
     </>
   );

@@ -3,8 +3,8 @@
  * Hero section component (TypeScript)
  */
 
+import React, { useContext, useState } from "react";
 import Link from "next/link";
-import { useContext, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import ProductCard from "./molecules/ProductCard";
 import ProductCarousel from "./molecules/ProductCarousel";

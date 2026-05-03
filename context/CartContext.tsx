@@ -38,7 +38,13 @@ interface CartContextType {
   loading: boolean;
   fetchCart: () => Promise<void>;
   fetchCartWithPricing: () => Promise<void>;
-  addToCart: (productId: string | number, quantity: number) => Promise<void>;
+  addToCart: (
+    productId: string | number,
+    quantity: number,
+    selectedSize?: string,
+    selectedColor?: string,
+    selectedCapacity?: string,
+  ) => Promise<void>;
   removeFromCart: (itemId: string | number) => Promise<void>;
   updateCartItem: (itemId: string | number, quantity: number) => Promise<void>;
   applyCoupon: (couponCode: string) => Promise<any>;
@@ -96,6 +102,9 @@ export const CartProvider = ({ children }: CartProviderProps): JSX.Element => {
   const addToCart = async (
     productId: string | number,
     quantity: number,
+    selectedSize?: string,
+    selectedColor?: string,
+    selectedCapacity?: string,
   ): Promise<void> => {
     try {
       // Check if user is logged in
@@ -105,7 +114,13 @@ export const CartProvider = ({ children }: CartProviderProps): JSX.Element => {
         return;
       }
 
-      await cartService.addToCart(productId, quantity);
+      await cartService.addToCart(
+        productId,
+        quantity,
+        selectedSize,
+        selectedColor,
+        selectedCapacity,
+      );
       await fetchCart();
       toast.success("Product added to cart!");
     } catch (error: any) {

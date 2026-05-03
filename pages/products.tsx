@@ -50,6 +50,7 @@ const ProductsPage = (): JSX.Element => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalProducts, setTotalProducts] = useState<number>(0);
 
   // Collapsible filter sections
   const [expandedSections, setExpandedSections] = useState<
@@ -71,6 +72,7 @@ const ProductsPage = (): JSX.Element => {
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [availability, setAvailability] = useState<string>("all"); // all, inStock, outOfStock
+  const [chipSort, setChipSort] = useState<string | null>(null);
 
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => ({
@@ -242,11 +244,14 @@ const ProductsPage = (): JSX.Element => {
         }
         if (availability === "inStock") params.inStock = "true";
         else if (availability === "outOfStock") params.inStock = "false";
+        if (chipSort) params.sort = chipSort;
         if (selectedRating) params.minRating = selectedRating;
 
         const response = await productService.getProducts(page, 12, params);
         setProducts(Array.isArray(response?.data) ? response.data : []);
-        setTotalPages(Math.ceil((response?.pagination?.total || 0) / 12) || 1);
+        const total = response?.pagination?.total || 0;
+        setTotalProducts(total);
+        setTotalPages(Math.ceil(total / 12) || 1);
       } catch (error) {
         console.error("Failed to fetch products:", error);
       } finally {
@@ -264,6 +269,7 @@ const ProductsPage = (): JSX.Element => {
     priceRange,
     availability,
     selectedRating,
+    chipSort,
   ]);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
@@ -277,6 +283,21 @@ const ProductsPage = (): JSX.Element => {
 
   const handlePrevPage = (): void => {
     if (page > 1) setPage(page - 1);
+  };
+
+  const handleClearFilters = (): void => {
+    setSearchQuery("");
+    setPage(1);
+    setSelectedSizes([]);
+    setSelectedColors([]);
+    setSelectedCategory("");
+    setSelectedRating(null);
+    setPriceRange([
+      filtersData?.priceRange.min ?? 0,
+      filtersData?.priceRange.max ?? 1000,
+    ]);
+    setAvailability("all");
+    setChipSort(null);
   };
 
   const toggleFilter = (
@@ -924,36 +945,174 @@ const ProductsPage = (): JSX.Element => {
         <main className="flex-1">
           {/* Header with Search */}
           <div className="p-4 border-b border-gray-200 md:p-8">
-            <div className="flex items-center justify-between mb-6 md:hidden">
-              <h1 className="text-2xl font-bold">PRODUCTS</h1>
-              <button
-                onClick={() => setShowFiltersSidebar(true)}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded"
-              >
-                <FiFilter className="w-4 h-4" />
-                Filters
-              </button>
-            </div>
-            <h1 className="hidden mb-6 text-3xl font-bold md:block">
-              PRODUCTS
-            </h1>
+            {/* Breadcrumb */}
+            <nav className="mb-2 text-sm text-gray-500">
+              <Link href="/">Home</Link>
+              <span className="px-2">/</span>
+              <span className="font-medium">Products</span>
+            </nav>
 
-            {/* Search Bar */}
-            <form onSubmit={handleSearch} className="relative">
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-3 pr-12 border border-gray-300 rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
-              />
-              <button
-                type="submit"
-                className="absolute text-gray-600 -translate-y-1/2 right-4 top-1/2"
-              >
-                <FiSearch className="w-5 h-5" />
-              </button>
-            </form>
+            <div className="mb-4 md:mb-6">
+              <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-bold md:text-3xl">PRODUCTS</h1>
+                <button
+                  onClick={() => setShowFiltersSidebar(true)}
+                  className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded md:hidden"
+                >
+                  <FiFilter className="w-4 h-4" />
+                  Filters
+                </button>
+              </div>
+
+              {/* Search + Chips Row */}
+              <div className="flex flex-col gap-3 mt-4 md:flex-row md:items-center">
+                <form
+                  onSubmit={handleSearch}
+                  className="flex items-center flex-1 gap-2 px-3 py-2 bg-transparent border border-gray-400 md:gap-3 md:px-4 md:py-3"
+                >
+                  <FiSearch className="w-4 h-4 text-gray-600 md:w-5 md:h-5 shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1 min-w-0 text-lg text-gray-800 placeholder-gray-500 bg-transparent outline-none md:text-sm"
+                  />
+                  <button type="submit" className="sr-only">
+                    Search
+                  </button>
+                </form>
+
+                <button
+                  type="button"
+                  onClick={handleClearFilters}
+                  className="inline-flex items-center justify-center px-4 py-3 text-sm font-light tracking-wide text-gray-500 uppercase bg-transparent border border-gray-500 hover:border-gray-500 hover:text-gray-700"
+                >
+                  Clear Filter
+                </button>
+
+                {/* Chips - desktop */}
+                <div className="hidden md:flex md:items-center md:gap-2 md:ml-4">
+                  {[
+                    {
+                      label: "New",
+                      action: () => {
+                        setChipSort("new");
+                        setSelectedCategory("");
+                        setPage(1);
+                      },
+                    },
+                    {
+                      label: "Shirts",
+                      action: () => {
+                        setChipSort(null);
+                        setSelectedCategory("t-shirt");
+                        setPage(1);
+                      },
+                    },
+                    {
+                      label: "Jeans",
+                      action: () => {
+                        setChipSort(null);
+                        setSelectedCategory("jeans");
+                        setPage(1);
+                      },
+                    },
+                    {
+                      label: "Best Sellers",
+                      action: () => {
+                        setChipSort("best");
+                        setSelectedCategory("");
+                        setPage(1);
+                      },
+                    },
+                    {
+                      label: "Jackets",
+                      action: () => {
+                        setChipSort(null);
+                        setSelectedCategory("jackets");
+                        setPage(1);
+                      },
+                    },
+                  ].map((chip) => (
+                    <button
+                      key={chip.label}
+                      onClick={chip.action}
+                      className={`whitespace-nowrap px-4 py-3 text-sm rounded border transition ${
+                        (chip.label === "New" && chipSort === "new") ||
+                        (chip.label === "Best Sellers" &&
+                          chipSort === "best") ||
+                        (chip.label !== "New" &&
+                          chip.label !== "Best Sellers" &&
+                          selectedCategory &&
+                          selectedCategory ===
+                            (chip.label === "Shirts"
+                              ? "t-shirt"
+                              : chip.label.toLowerCase()))
+                          ? "bg-black text-white border-black"
+                          : " text-gray-700 border-gray-300 hover:bg-gray-100"
+                      }`}
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Chips - mobile (below search) */}
+                <div className="flex gap-2 mt-2 overflow-x-auto md:hidden">
+                  {[
+                    {
+                      label: "New",
+                      action: () => {
+                        setChipSort("new");
+                        setSelectedCategory("");
+                        setPage(1);
+                      },
+                    },
+                    {
+                      label: "Shirts",
+                      action: () => {
+                        setChipSort(null);
+                        setSelectedCategory("t-shirt");
+                        setPage(1);
+                      },
+                    },
+                    {
+                      label: "Jeans",
+                      action: () => {
+                        setChipSort(null);
+                        setSelectedCategory("jeans");
+                        setPage(1);
+                      },
+                    },
+                    {
+                      label: "Best Sellers",
+                      action: () => {
+                        setChipSort("best");
+                        setSelectedCategory("");
+                        setPage(1);
+                      },
+                    },
+                    {
+                      label: "Jackets",
+                      action: () => {
+                        setChipSort(null);
+                        setSelectedCategory("jackets");
+                        setPage(1);
+                      },
+                    },
+                  ].map((chip) => (
+                    <button
+                      key={chip.label}
+                      onClick={chip.action}
+                      className="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded whitespace-nowrap hover:bg-gray-100"
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Products Grid */}
@@ -971,7 +1130,7 @@ const ProductsPage = (): JSX.Element => {
                 {/* Products Count */}
                 <div className="mb-6 text-sm text-gray-600">
                   Showing {products.length} of{" "}
-                  <span className="font-semibold">{totalPages * 12}</span>{" "}
+                  <span className="font-semibold">{totalProducts}</span>{" "}
                   products
                 </div>
 

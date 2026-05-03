@@ -14,6 +14,9 @@ import { toast } from "react-toastify";
 interface CartItem {
   id: string;
   quantity: number;
+  selectedSize?: string;
+  selectedColor?: string;
+  selectedCapacity?: string;
   product?: {
     id: string;
     name: string;
@@ -461,6 +464,50 @@ function CartPageContent(_props: CartPageContentProps): JSX.Element {
                             </span>
                           </div>
                         )}
+                      </div>
+                    )}
+
+                    {/* Selected Variants */}
+                    {(item.selectedSize ||
+                      item.selectedColor ||
+                      item.selectedCapacity) && (
+                      <div
+                        style={{
+                          padding: "0.75rem",
+                          backgroundColor: "#e8f5e9",
+                          borderRadius: "4px",
+                          marginBottom: "1rem",
+                          border: "1px solid #c8e6c9",
+                        }}
+                      >
+                        <p
+                          style={{
+                            marginTop: 0,
+                            marginBottom: "0.5rem",
+                            fontSize: "0.85rem",
+                            fontWeight: "bold",
+                            color: "#2e7d32",
+                          }}
+                        >
+                          ✓ Selected:
+                        </p>
+                        <div style={{ fontSize: "0.85rem", color: "#1b5e20" }}>
+                          {item.selectedSize && (
+                            <div>
+                              <strong>Size:</strong> {item.selectedSize}
+                            </div>
+                          )}
+                          {item.selectedColor && (
+                            <div>
+                              <strong>Color:</strong> {item.selectedColor}
+                            </div>
+                          )}
+                          {item.selectedCapacity && (
+                            <div>
+                              <strong>Capacity:</strong> {item.selectedCapacity}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>

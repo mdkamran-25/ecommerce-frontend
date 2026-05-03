@@ -12,7 +12,17 @@ export const getCartWithPricing = (): Promise<any> => api.get("/cart/pricing");
 export const addToCart = (
   productId: string | number,
   quantity: number,
-): Promise<any> => api.post("/cart/add", { productId, quantity });
+  selectedSize?: string,
+  selectedColor?: string,
+  selectedCapacity?: string,
+): Promise<any> =>
+  api.post("/cart/add", {
+    productId,
+    quantity,
+    selectedSize,
+    selectedColor,
+    selectedCapacity,
+  });
 
 export const updateCartItem = (
   itemId: string | number,
