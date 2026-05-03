@@ -18,8 +18,21 @@ interface CartItem {
     id: string;
     name: string;
     price: number;
+    compareAt?: number;
     stock: number;
     images?: string[];
+    sku?: string;
+    description?: string;
+    category?: string | { name: string };
+    vendor?: string;
+    weight?: number;
+    dimensions?: string;
+    variants?: Array<{
+      id: string;
+      type: string;
+      value: string;
+      stock: number;
+    }>;
   };
 }
 
@@ -234,82 +247,286 @@ function CartPageContent(_props: CartPageContentProps): JSX.Element {
         style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "2rem" }}
       >
         <div>
-          {cart.items.map((item: CartItem) => (
-            <div
-              key={item.id}
-              style={{
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                padding: "1rem",
-                marginBottom: "1rem",
-                display: "grid",
-                gridTemplateColumns: "100px 1fr auto",
-                gap: "1rem",
-                alignItems: "start",
-              }}
-            >
-              {item.product.images?.[0] && (
-                <img
-                  src={item.product.images[0]}
-                  alt={item.product.name}
+          {cart.items.map((item: CartItem) => {
+            const sizeVariants =
+              item.product?.variants?.filter((v) => v.type === "size") || [];
+            const colorVariants =
+              item.product?.variants?.filter((v) => v.type === "color") || [];
+
+            return (
+              <div
+                key={item.id}
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  padding: "1.5rem",
+                  marginBottom: "1.5rem",
+                  backgroundColor: "#fafafa",
+                }}
+              >
+                <div
                   style={{
-                    width: "100px",
-                    height: "100px",
-                    objectFit: "cover",
-                    borderRadius: "4px",
+                    display: "grid",
+                    gridTemplateColumns: "120px 1fr auto",
+                    gap: "1.5rem",
+                    marginBottom: "1rem",
                   }}
-                />
-              )}
+                >
+                  {/* Product Image */}
+                  {item.product.images?.[0] && (
+                    <img
+                      src={item.product.images[0]}
+                      alt={item.product.name}
+                      style={{
+                        width: "120px",
+                        height: "120px",
+                        objectFit: "cover",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                      }}
+                    />
+                  )}
 
-              <div>
-                <h3 style={{ marginBottom: "0.5rem" }}>
-                  <Link href={`/products/${item.product.id}`}>
-                    {item.product.name}
-                  </Link>
-                </h3>
-                <p style={{ color: "#666", marginBottom: "0.5rem" }}>
-                  Price: ${item.product.price}
-                </p>
+                  {/* Product Details */}
+                  <div>
+                    <h3 style={{ marginBottom: "0.5rem", marginTop: 0 }}>
+                      <Link href={`/products/${item.product.id}`}>
+                        {item.product.name}
+                      </Link>
+                    </h3>
 
+                    {/* Category & SKU */}
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "1rem",
+                        marginBottom: "0.75rem",
+                        fontSize: "0.9rem",
+                        color: "#666",
+                      }}
+                    >
+                      {item.product.category && (
+                        <span>
+                          <strong>Category:</strong>{" "}
+                          {typeof item.product.category === "string"
+                            ? item.product.category
+                            : item.product.category?.name}
+                        </span>
+                      )}
+                      {item.product.sku && (
+                        <span>
+                          <strong>SKU:</strong> {item.product.sku}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Description */}
+                    {item.product.description && (
+                      <p
+                        style={{
+                          marginBottom: "0.75rem",
+                          color: "#666",
+                          fontSize: "0.9rem",
+                          lineHeight: "1.4",
+                        }}
+                      >
+                        {item.product.description.length > 120
+                          ? item.product.description.substring(0, 120) + "..."
+                          : item.product.description}
+                      </p>
+                    )}
+
+                    {/* Product Details Grid */}
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns:
+                          "repeat(auto-fit, minmax(150px, 1fr))",
+                        gap: "1rem",
+                        marginBottom: "1rem",
+                        fontSize: "0.85rem",
+                      }}
+                    >
+                      {/* Price Info */}
+                      <div>
+                        <span style={{ color: "#666" }}>
+                          <strong>Price:</strong>
+                        </span>
+                        <div>
+                          ${item.product.price}
+                          {item.product.compareAt && (
+                            <span
+                              style={{
+                                marginLeft: "0.5rem",
+                                textDecoration: "line-through",
+                                color: "#999",
+                              }}
+                            >
+                              ${item.product.compareAt}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Stock Status */}
+                      <div>
+                        <span style={{ color: "#666" }}>
+                          <strong>Stock:</strong>
+                        </span>
+                        <div
+                          style={{
+                            color:
+                              item.product.stock > 0 ? "#28a745" : "#dc3545",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {item.product.stock > 0
+                            ? `${item.product.stock} Available`
+                            : "Out of Stock"}
+                        </div>
+                      </div>
+
+                      {/* Vendor */}
+                      {item.product.vendor && (
+                        <div>
+                          <span style={{ color: "#666" }}>
+                            <strong>Vendor:</strong>
+                          </span>
+                          <div>{item.product.vendor}</div>
+                        </div>
+                      )}
+
+                      {/* Weight */}
+                      {item.product.weight && (
+                        <div>
+                          <span style={{ color: "#666" }}>
+                            <strong>Weight:</strong>
+                          </span>
+                          <div>{item.product.weight} kg</div>
+                        </div>
+                      )}
+
+                      {/* Dimensions */}
+                      {item.product.dimensions && (
+                        <div>
+                          <span style={{ color: "#666" }}>
+                            <strong>Dimensions:</strong>
+                          </span>
+                          <div>{item.product.dimensions}</div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Variants */}
+                    {(sizeVariants.length > 0 || colorVariants.length > 0) && (
+                      <div
+                        style={{
+                          padding: "0.75rem",
+                          backgroundColor: "#f0f0f0",
+                          borderRadius: "4px",
+                          marginBottom: "1rem",
+                        }}
+                      >
+                        <p
+                          style={{
+                            marginTop: 0,
+                            marginBottom: "0.5rem",
+                            fontSize: "0.85rem",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          Available Variants:
+                        </p>
+                        {sizeVariants.length > 0 && (
+                          <div style={{ marginBottom: "0.5rem" }}>
+                            <span
+                              style={{ fontSize: "0.85rem", color: "#666" }}
+                            >
+                              <strong>Sizes:</strong>{" "}
+                              {sizeVariants
+                                .map((v) => `${v.value} (${v.stock} stock)`)
+                                .join(", ")}
+                            </span>
+                          </div>
+                        )}
+                        {colorVariants.length > 0 && (
+                          <div>
+                            <span
+                              style={{ fontSize: "0.85rem", color: "#666" }}
+                            >
+                              <strong>Colors:</strong>{" "}
+                              {colorVariants
+                                .map((v) => `${v.value} (${v.stock} stock)`)
+                                .join(", ")}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Remove Button */}
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <button
+                      onClick={() => handleRemove(item.id)}
+                      style={{
+                        backgroundColor: "#dc3545",
+                        padding: "0.5rem 1rem",
+                        height: "fit-content",
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+
+                {/* Quantity Control */}
                 <div
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "0.5rem",
-                    marginBottom: "0.5rem",
+                    gap: "1rem",
+                    borderTop: "1px solid #ddd",
+                    paddingTop: "1rem",
                   }}
                 >
-                  <label>Qty:</label>
-                  <input
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) =>
-                      handleUpdateQuantity(item.id, parseInt(e.target.value))
-                    }
-                    min="1"
-                    max={item.product.stock}
-                    style={{ width: "70px" }}
-                  />
-                  <span style={{ fontSize: "0.9rem", color: "#999" }}>
-                    Stock: {item.product.stock}
-                  </span>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <label style={{ fontWeight: "bold" }}>Quantity:</label>
+                    <input
+                      type="number"
+                      value={item.quantity}
+                      onChange={(e) =>
+                        handleUpdateQuantity(item.id, parseInt(e.target.value))
+                      }
+                      min="1"
+                      max={item.product.stock}
+                      style={{
+                        width: "80px",
+                        padding: "0.5rem",
+                        border: "1px solid #ddd",
+                        borderRadius: "4px",
+                      }}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      marginLeft: "auto",
+                      fontSize: "1.1rem",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Subtotal: ${(item.quantity * item.product.price).toFixed(2)}
+                  </div>
                 </div>
-
-                <p style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-                  Subtotal: ${(item.quantity * item.product.price).toFixed(2)}
-                </p>
               </div>
-
-              <div>
-                <button
-                  onClick={() => handleRemove(item.id)}
-                  style={{ backgroundColor: "#dc3545", width: "100px" }}
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
 
           {/* Coupon Section */}
           <div

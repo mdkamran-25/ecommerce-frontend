@@ -328,7 +328,7 @@ const ProductDetail: FC = () => {
         <meta name="description" content={product.description} />
       </Head>
 
-      <div className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(0,0,0,0.06),transparent_38%),linear-gradient(180deg,#f7f7f4_0%,#f0f0ed_100%)] px-4 py-4 text-slate-900 md:px-8 lg:px-12">
+      <div className="min-h-screen px-4 py-4 text-slate-900 md:px-8 lg:px-12">
         <div className="mx-auto max-w-7xl">
           <button
             onClick={() => router.back()}
@@ -338,14 +338,14 @@ const ProductDetail: FC = () => {
             Back
           </button>
 
-          <div className="grid gap-6 lg:grid-cols-[1.15fr_88px_0.9fr] lg:items-start">
+          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.9fr] lg:items-start">
             <section className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_80px] lg:gap-4">
               <div className="overflow-hidden border border-slate-200 bg-white/80 shadow-[0_20px_70px_rgba(0,0,0,0.08)] backdrop-blur-sm">
                 {mainImage ? (
                   <img
                     src={mainImage}
                     alt={product.name}
-                    className="object-cover object-center w-full h-135 md:h-155"
+                    className="object-cover object-center w-full h-135 md:h-135"
                   />
                 ) : (
                   <div className="flex items-center justify-center text-sm h-135 bg-slate-100 text-slate-500 md:h-155">
@@ -381,10 +381,6 @@ const ProductDetail: FC = () => {
                 )}
               </div>
             </section>
-
-            <aside className="hidden lg:block">
-              <div className="w-10 h-10 mx-auto rotate-45 border border-slate-900 bg-slate-900" />
-            </aside>
 
             <section className="border border-slate-200 bg-white/85 p-6 shadow-[0_20px_70px_rgba(0,0,0,0.08)] backdrop-blur-sm md:p-8 lg:sticky lg:top-6">
               <div className="flex items-start justify-between gap-4 mb-6">
