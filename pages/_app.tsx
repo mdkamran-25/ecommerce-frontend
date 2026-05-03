@@ -7,6 +7,7 @@ import { AppProps } from "next/app";
 import { JSX } from "react";
 import { AuthProvider } from "../context/AuthContext";
 import { CartProvider } from "../context/CartContext";
+import { WishlistProvider } from "../context/WishlistContext";
 import Header from "../components/Header";
 import { ToastContainer } from "react-toastify";
 import Script from "next/script";
@@ -26,24 +27,26 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
       />
       <AuthProvider>
         <CartProvider>
-          <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={true}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-          />
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="w-full px-6 py-8 mx-auto grow">
-              <Component {...pageProps} />
-            </main>
-          </div>
+          <WishlistProvider>
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={true}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
+            <div className="flex flex-col min-h-screen">
+              <Header />
+              <main className="w-full px-6 py-8 mx-auto grow">
+                <Component {...pageProps} />
+              </main>
+            </div>
+          </WishlistProvider>
         </CartProvider>
       </AuthProvider>
     </>

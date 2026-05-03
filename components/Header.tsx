@@ -131,12 +131,13 @@ const Header: React.FC = () => {
           {/* Right Section: Icons */}
           <div className="flex items-center gap-2 md:gap-8">
             {/* Wishlist Icon - Hidden on Mobile, Shown on Desktop */}
-            <button
+            <Link
+              href="/wishlist"
               className="hidden p-2.5 text-white transition bg-black rounded-full hover:bg-gray-800 md:block"
               title="Wishlist"
             >
               <CiHeart className="w-6 h-6" />
-            </button>
+            </Link>
 
             {/* Cart Icon with Badge */}
             <div className="flex items-center gap-0 md:gap-0">

@@ -13,6 +13,7 @@ import { CartContext } from "../../context/CartContext";
 import { AuthContext } from "../../context/AuthContext";
 import { Product } from "../../types";
 import { toast } from "react-toastify";
+import WishlistButton from "../../components/WishlistButton";
 
 const currency = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -395,13 +396,7 @@ const ProductDetail: FC = () => {
                   </h1>
                 </div>
 
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center w-10 h-10 transition border border-slate-300 text-slate-500 hover:border-slate-900 hover:text-slate-900"
-                  aria-label="Save product"
-                >
-                  ♡
-                </button>
+                <WishlistButton productId={String(product.id)} size="lg" />
               </div>
 
               <div className="mb-6 space-y-1">
