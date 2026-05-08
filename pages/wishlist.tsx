@@ -106,10 +106,13 @@ function WishlistPageContent(): JSX.Element {
                     <Link href={`/products/${item.productId}`}>
                       <div className="relative bg-gray-100 h-48 overflow-hidden group cursor-pointer">
                         {item.product.images?.[0] ? (
-                          <img
+                          <Image
                             src={item.product.images[0]}
                             alt={item.product.name}
+                            fill
+                            sizes="(max-width: 640px) 100%, 300px"
                             className="w-full h-full object-cover group-hover:scale-105 transition"
+                            priority={false}
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-gray-400">

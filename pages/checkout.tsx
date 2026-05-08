@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect, JSX } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import Link from "next/link";
+import Image from "next/image";
 import { CartContext } from "../context/CartContext";
 import * as orderService from "../services/orderService";
 import ProtectedRoute from "../components/ProtectedRoute";
@@ -416,12 +416,15 @@ function CheckoutPageContent(): JSX.Element {
                 {cartItems.map((item: CartItem) => (
                   <div key={item.id} className="flex gap-3">
                     {/* Product Image */}
-                    <div className="w-20 h-20 overflow-hidden bg-gray-100 rounded shrink-0">
+                    <div className="w-20 h-20 overflow-hidden bg-gray-100 rounded shrink-0 relative">
                       {item.product?.images?.[0] && (
-                        <img
+                        <Image
                           src={item.product.images[0]}
                           alt={item.product.name}
-                          className="object-cover w-full h-full"
+                          fill
+                          sizes="80px"
+                          className="object-cover"
+                          priority={false}
                         />
                       )}
                     </div>

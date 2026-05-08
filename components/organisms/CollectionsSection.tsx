@@ -22,6 +22,23 @@ interface CollectionsSectionProps {
 
 const FILTER_OPTIONS = ["ALL", "Men", "Women", "KID"];
 
+const CATEGORY_ALIASES: Record<string, string[]> = {
+  ALL: [],
+  Men: ["men", "mens", "men's"],
+  Women: ["women", "womens", "women's"],
+  KID: ["kid", "kids", "kid's", "children"],
+};
+
+const getCategoryValue = (product: Product): string => {
+  const category = product.category;
+
+  if (typeof category === "string") {
+    return category.toLowerCase();
+  }
+
+  return (category?.slug || category?.name || "").toLowerCase();
+};
+
 export const CollectionsSection: React.FC<CollectionsSectionProps> = ({
   products = [],
   loading = false,
@@ -38,11 +55,12 @@ export const CollectionsSection: React.FC<CollectionsSectionProps> = ({
     selectedCategory === "ALL"
       ? products
       : products.filter((p) => {
-          const categoryValue =
-            typeof p.category === "string"
-              ? p.category
-              : (p.category?.name ?? "");
-          return categoryValue.toLowerCase() === selectedCategory.toLowerCase();
+          const categoryValue = getCategoryValue(p);
+          const allowedValues = CATEGORY_ALIASES[selectedCategory] || [
+            selectedCategory.toLowerCase(),
+          ];
+
+          return allowedValues.some((value) => categoryValue === value);
         });
 
   // Sort products

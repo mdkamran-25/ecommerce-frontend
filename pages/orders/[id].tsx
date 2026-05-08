@@ -2,6 +2,7 @@ import { useEffect, useState, useContext, JSX } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Link from "next/link";
+import Image from "next/image";
 import * as orderService from "../../services/orderService";
 import ProtectedRoute from "../../components/ProtectedRoute";
 
@@ -272,12 +273,12 @@ function OrderDetailPageContent(): JSX.Element {
                 }}
               >
                 {item.product.images?.[0] && (
-                  <img
+                  <Image
                     src={item.product.images[0]}
                     alt={item.product.name}
+                    width={100}
+                    height={100}
                     style={{
-                      width: "100px",
-                      height: "100px",
                       objectFit: "cover",
                       borderRadius: "4px",
                     }}

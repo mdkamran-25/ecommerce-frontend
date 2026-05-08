@@ -5,6 +5,7 @@
 
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState, useContext, FC } from "react";
 import Head from "next/head";
 import productService from "../../services/productService";
@@ -14,6 +15,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { Product } from "../../types";
 import { toast } from "react-toastify";
 import WishlistButton from "../../components/WishlistButton";
+import { optimizeImageKitUrl } from "../../utils/imagekit";
 
 const currency = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -357,12 +359,17 @@ const ProductDetail: FC = () => {
 
           <div className="grid gap-6 lg:grid-cols-[1.15fr_0.9fr] lg:items-start">
             <section className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_80px] lg:gap-4">
-              <div className="overflow-hidden border border-slate-200 bg-white/80 shadow-[0_20px_70px_rgba(0,0,0,0.08)] backdrop-blur-sm">
+              <div className="relative aspect-square w-full overflow-hidden border border-slate-200 bg-white/80 shadow-[0_20px_70px_rgba(0,0,0,0.08)] backdrop-blur-sm md:aspect-4/5 lg:aspect-3/4">
                 {mainImage ? (
-                  <img
-                    src={mainImage}
+                  <Image
+                    src={optimizeImageKitUrl(mainImage, "detail")}
                     alt={product.name}
-                    className="object-cover object-center w-full h-135 md:h-155"
+                    fill
+                    sizes="(max-width: 768px) 100%, 600px"
+                    className="object-cover object-center"
+                    quality={100}
+                    unoptimized={true}
+                    priority={true}
                   />
                 ) : (
                   <div className="flex items-center justify-center text-sm h-135 bg-slate-100 text-slate-500 md:h-155">
@@ -384,10 +391,15 @@ const ProductDetail: FC = () => {
                           : "border-slate-200 opacity-70 hover:opacity-100"
                       }`}
                     >
-                      <img
-                        src={image}
+                      <Image
+                        src={optimizeImageKitUrl(image, "thumbnail")}
                         alt={`${product.name} thumbnail ${index + 1}`}
-                        className="object-cover w-full h-full"
+                        fill
+                        sizes="80px"
+                        className="object-cover"
+                        quality={100}
+                        unoptimized={true}
+                        priority={false}
                       />
                     </button>
                   ))
@@ -606,33 +618,33 @@ const ProductDetail: FC = () => {
           </div>
 
           {/* Reviews Section - aligned with main page container for consistent padding */}
-          <div className="mt-12 border-t border-slate-200 pt-8">
-            <h2 className="text-2xl font-semibold mb-6">Customer Reviews</h2>
+          <div className="pt-8 mt-12 border-t border-slate-200">
+            <h2 className="mb-6 text-2xl font-semibold">Customer Reviews</h2>
 
             {ratingStats && (
               <div
                 className="grid"
                 style={{ gridTemplateColumns: "200px 1fr", gap: "1rem" }}
               >
-                <div className="mb-6 p-6 bg-slate-50 rounded-md text-center">
-                  <div className="text-4xl font-bold mb-2">
+                <div className="p-6 mb-6 text-center rounded-md bg-slate-50">
+                  <div className="mb-2 text-4xl font-bold">
                     {ratingStats.averageRating.toFixed(1)}
                   </div>
                   <RatingStars
                     rating={Math.round(ratingStats.averageRating)}
                     size="1.5rem"
                   />
-                  <p className="text-sm text-slate-600 mt-2">
+                  <p className="mt-2 text-sm text-slate-600">
                     {ratingStats.totalReviews} review
                     {ratingStats.totalReviews !== 1 ? "s" : ""}
                   </p>
                 </div>
 
-                <div className="mb-6 p-6 bg-slate-50 rounded-md">
+                <div className="p-6 mb-6 rounded-md bg-slate-50">
                   {[5, 4, 3, 2, 1].map((stars) => (
                     <div key={stars} className="flex items-center gap-4 mb-2">
                       <div className="w-8 text-right">{stars}★</div>
-                      <div className="w-56 h-2 bg-slate-200 rounded overflow-hidden">
+                      <div className="w-56 h-2 overflow-hidden rounded bg-slate-200">
                         <div
                           className="h-full bg-amber-400"
                           style={{
@@ -655,7 +667,7 @@ const ProductDetail: FC = () => {
             {user && !showReviewForm && !userReview && (
               <button
                 onClick={() => setShowReviewForm(true)}
-                className="mb-6 px-4 py-2 bg-blue-600 text-white rounded"
+                className="px-4 py-2 mb-6 text-white bg-blue-600 rounded"
               >
                 Write a Review
               </button>
@@ -673,14 +685,14 @@ const ProductDetail: FC = () => {
             {showReviewForm && user && (
               <form
                 onSubmit={handleSubmitReview}
-                className="mb-6 p-6 bg-slate-50 rounded border border-slate-200"
+                className="p-6 mb-6 border rounded bg-slate-50 border-slate-200"
               >
                 <h3 className="mb-4">
                   {userReview ? "Update Your Review" : "Share Your Review"}
                 </h3>
 
                 {reviewError && (
-                  <div className="p-4 mb-4 bg-red-50 text-red-700 rounded">
+                  <div className="p-4 mb-4 text-red-700 rounded bg-red-50">
                     {reviewError}
                   </div>
                 )}
@@ -732,7 +744,7 @@ const ProductDetail: FC = () => {
                     placeholder="Share your experience with this product..."
                     rows={5}
                     required
-                    className="w-full p-3 border rounded font-sans"
+                    className="w-full p-3 font-sans border rounded"
                   />
                 </div>
 
@@ -740,7 +752,7 @@ const ProductDetail: FC = () => {
                   <button
                     type="submit"
                     disabled={submittingReview}
-                    className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-60"
+                    className="px-4 py-2 text-white bg-green-600 rounded disabled:opacity-60"
                   >
                     {submittingReview ? "Submitting..." : "Submit Review"}
                   </button>
@@ -752,7 +764,7 @@ const ProductDetail: FC = () => {
                       if (!userReview)
                         setReviewForm({ rating: 5, title: "", comment: "" });
                     }}
-                    className="px-4 py-2 bg-gray-600 text-white rounded"
+                    className="px-4 py-2 text-white bg-gray-600 rounded"
                   >
                     Cancel
                   </button>
@@ -761,9 +773,9 @@ const ProductDetail: FC = () => {
             )}
 
             {loadingReviews ? (
-              <div className="text-center py-8">Loading reviews...</div>
+              <div className="py-8 text-center">Loading reviews...</div>
             ) : reviews.length === 0 ? (
-              <p className="text-slate-600 text-center py-8">
+              <p className="py-8 text-center text-slate-600">
                 No reviews yet. Be the first to review!
               </p>
             ) : (
@@ -773,9 +785,9 @@ const ProductDetail: FC = () => {
                     key={review.id}
                     className="pb-6 mb-4 border-b border-slate-200"
                   >
-                    <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-start justify-between mb-2">
                       <div>
-                        <p className="font-bold mb-1">
+                        <p className="mb-1 font-bold">
                           {review.user?.firstName} {review.user?.lastName}
                         </p>
                         <RatingStars rating={review.rating} />
@@ -783,16 +795,16 @@ const ProductDetail: FC = () => {
                       {user?.userId === review.userId && (
                         <button
                           onClick={() => handleDeleteReview(review.id)}
-                          className="px-3 py-1 bg-red-600 text-white rounded text-sm"
+                          className="px-3 py-1 text-sm text-white bg-red-600 rounded"
                         >
                           Delete
                         </button>
                       )}
                     </div>
 
-                    <p className="font-bold mb-2">{review.title}</p>
+                    <p className="mb-2 font-bold">{review.title}</p>
 
-                    <p className="text-slate-600 leading-7 mb-2">
+                    <p className="mb-2 leading-7 text-slate-600">
                       {review.content}
                     </p>
 

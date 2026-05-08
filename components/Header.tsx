@@ -5,6 +5,7 @@
 
 import React, { useContext, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { CiHeart } from "react-icons/ci";
 import { HiOutlineShoppingCart } from "react-icons/hi2";
@@ -120,10 +121,13 @@ const Header: React.FC = () => {
           {/* Center: Brand Logo - Centered on Mobile */}
           <div className="absolute transform -translate-x-1/2 left-1/2 md:absolute md:left-1/2 md:-translate-x-1/2">
             <Link href="/" className="shrink-0">
-              <img
+              <Image
                 src="/icons/brandlogo.svg"
                 alt="Brand Logo"
-                className="h-8"
+                width={128}
+                height={32}
+                priority
+                className="h-8 w-auto"
               />
             </Link>
           </div>

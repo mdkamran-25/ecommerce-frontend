@@ -35,6 +35,23 @@ export default function Home({}: HomeProps): React.JSX.Element {
   const [newThisWeek, setNewThisWeek] = useState<Product[]>([]);
   const [heroSearchQuery, setHeroSearchQuery] = useState<string>("");
 
+  const CATEGORY_ALIASES: Record<string, string[]> = {
+    ALL: [],
+    Men: ["men", "mens", "men's"],
+    Women: ["women", "womens", "women's"],
+    KID: ["kid", "kids", "kid's", "children"],
+  };
+
+  const getCategoryValue = (product: Product): string => {
+    const category = product.category;
+
+    if (typeof category === "string") {
+      return category.toLowerCase();
+    }
+
+    return (category?.slug || category?.name || "").toLowerCase();
+  };
+
   // Fetch all products on mount
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -71,7 +88,14 @@ export default function Home({}: HomeProps): React.JSX.Element {
   const filteredProducts: Product[] =
     selectedCategory === "ALL"
       ? products
-      : products.filter((p) => p.category === selectedCategory);
+      : products.filter((p) => {
+          const categoryValue = getCategoryValue(p);
+          const allowedValues = CATEGORY_ALIASES[selectedCategory] || [
+            selectedCategory.toLowerCase(),
+          ];
+
+          return allowedValues.some((value) => categoryValue === value);
+        });
 
   // Handle hero search
   const handleHeroSearch = (e: React.FormEvent<HTMLFormElement>): void => {

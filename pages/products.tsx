@@ -248,7 +248,19 @@ const ProductsPage = (): JSX.Element => {
         if (selectedRating) params.minRating = selectedRating;
 
         const response = await productService.getProducts(page, 12, params);
-        setProducts(Array.isArray(response?.data) ? response.data : []);
+        const productsData = Array.isArray(response?.data) ? response.data : [];
+
+        // Log first few products to check if images are present
+        if (productsData.length > 0) {
+          console.log("[FRONTEND PRODUCTS] First product received:", {
+            id: productsData[0].id,
+            name: productsData[0].name,
+            imagesCount: productsData[0].images?.length || 0,
+            images: productsData[0].images || [],
+          });
+        }
+
+        setProducts(productsData);
         const total = response?.pagination?.total || 0;
         setTotalProducts(total);
         setTotalPages(Math.ceil(total / 12) || 1);

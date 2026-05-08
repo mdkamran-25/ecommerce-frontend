@@ -47,11 +47,14 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
   return (
     <div className="transition-all duration-200 card hover:shadow-lg hover:-translate-y-1">
       {product.images?.[0] && (
-        <div className="mb-4">
-          <img
+        <div className="mb-4 relative w-full h-48 overflow-hidden rounded-lg">
+          <Image
             src={product.images[0]}
             alt={product.name}
-            className="object-cover w-full h-48 rounded-lg"
+            fill
+            sizes="(max-width: 640px) 100%, 320px"
+            className="object-cover"
+            priority={false}
           />
         </div>
       )}
